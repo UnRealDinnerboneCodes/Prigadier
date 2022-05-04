@@ -4,6 +4,7 @@ import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.dedicated.DedicatedServer;
@@ -13,12 +14,12 @@ import java.util.function.Function;
 
 public class Prigadier {
 
-    public static void register(LiteralArgumentBuilder<BukkitBrigadierCommandSource> builder) {
+    private static <T extends BukkitBrigadierCommandSource> LiteralCommandNode<T> register(LiteralArgumentBuilder<BukkitBrigadierCommandSource> builder) {
         Object castMagic = builder;
-        DedicatedServer.getServer().getCommands().getDispatcher().register(((LiteralArgumentBuilder<CommandSourceStack>) castMagic));
+        return (LiteralCommandNode<T>) DedicatedServer.getServer().getCommands().getDispatcher().register(((LiteralArgumentBuilder<CommandSourceStack>) castMagic));
     }
 
-    public static Consumer<LiteralArgumentBuilder<BukkitBrigadierCommandSource>> getRegister() {
+    public static Function<LiteralArgumentBuilder<BukkitBrigadierCommandSource>, LiteralCommandNode<BukkitBrigadierCommandSource>> getRegister() {
         return Prigadier::register;
     }
 
