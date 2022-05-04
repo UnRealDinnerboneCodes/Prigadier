@@ -8,11 +8,18 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.dedicated.DedicatedServer;
 
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 public class Prigadier {
 
     public static void register(LiteralArgumentBuilder<BukkitBrigadierCommandSource> builder) {
         Object castMagic = builder;
         DedicatedServer.getServer().getCommands().getDispatcher().register(((LiteralArgumentBuilder<CommandSourceStack>) castMagic));
+    }
+
+    public static Consumer<LiteralArgumentBuilder<BukkitBrigadierCommandSource>> getRegister() {
+        return Prigadier::register;
     }
 
     public static <T> RequiredArgumentBuilder<BukkitBrigadierCommandSource, T> argument(String name, ArgumentType<T> type) {
