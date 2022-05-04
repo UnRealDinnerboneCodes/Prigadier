@@ -15,7 +15,6 @@ import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -59,7 +58,7 @@ public class PrigadierArguments {
         }
 
         protected static ItemStack fromItemInput(ItemInput itemInput) throws CommandSyntaxException {
-            return CraftItemStack.asBukkitCopy(itemInput.createItemStack(1, true));
+            return itemInput.createItemStack(1, true).asBukkitMirror();
         }
         protected static Entity fromEntity(net.minecraft.world.entity.Entity entity) {
             return entity.getBukkitEntity();
