@@ -9,6 +9,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.server.commands.ReloadCommand;
 import net.minecraft.server.dedicated.DedicatedServer;
 
 import java.util.function.Function;
@@ -34,6 +35,11 @@ public class Prigadier {
 
     public static <T extends BukkitBrigadierCommandSource> LiteralArgumentBuilder<T> literal(String name) {
         return (LiteralArgumentBuilder<T>) Commands.literal(name);
+    }
+
+
+    public static void reRegisterReloadCommand() {
+        ReloadCommand.register(DedicatedServer.getServer().getCommands().getDispatcher());
     }
 
 
