@@ -4,12 +4,13 @@ import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.mojang.brigadier.tree.RootCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.dedicated.DedicatedServer;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Prigadier {
@@ -21,6 +22,10 @@ public class Prigadier {
 
     public static Function<LiteralArgumentBuilder<BukkitBrigadierCommandSource>, LiteralCommandNode<BukkitBrigadierCommandSource>> getRegister() {
         return Prigadier::register;
+    }
+
+    public static <T extends BukkitBrigadierCommandSource> RootCommandNode<T> getRoot() {
+        return (RootCommandNode<T>) DedicatedServer.getServer().getCommands().getDispatcher().getRoot();
     }
 
     public static <T> RequiredArgumentBuilder<BukkitBrigadierCommandSource, T> argument(String name, ArgumentType<T> type) {
