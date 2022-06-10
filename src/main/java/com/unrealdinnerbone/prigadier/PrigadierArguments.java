@@ -8,17 +8,21 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.*;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.NamespacedKey;
+import org.bukkit.StructureType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
@@ -31,13 +35,14 @@ import static com.unrealdinnerbone.prigadier.PrigadierArguments.Mappers.*;
 public class PrigadierArguments {
 
 
+    private static final CommandBuildContext CONTEXT = new CommandBuildContext(RegistryAccess.BUILTIN.get());
     public static final Type<org.bukkit.entity.Entity> ENTITY = of(EntityArgument::entity, (context, s) -> fromEntity(EntityArgument.getEntity(cast(context), s)));
     public static final Type<List<org.bukkit.entity.Entity>> ENTITIES = of(EntityArgument::entities, (context, s) -> fromEntities(EntityArgument.getEntities(cast(context), s)));
     public static final Type<Player> PLAYER = of(EntityArgument::player, (context, s) -> fromPlayer(EntityArgument.getPlayer(cast(context), s)));
     public static final Type<List<Player>> PLAYERS = of(EntityArgument::players, (context, s) -> fromPlayers(EntityArgument.getPlayers(cast(context), s)));
     public static final Type<NamedTextColor> COLOR = of(EntityArgument::players, (context, s) -> fromColor(ColorArgument.getColor(cast(context), s)));
     public static final Type<Float> ANGLE = of(AngleArgument::angle, (context, s) -> (AngleArgument.getAngle(cast(context), s)));
-    public static final Type<ItemStack> ITEM = of(ItemArgument::item, (context, s) -> fromItemInput(ItemArgument.getItem(cast(context), s)));
+    public static final Type<ItemStack> ITEM = of(() -> ItemArgument.item(CONTEXT), (context, s) -> fromItemInput(ItemArgument.getItem(cast(context), s)));
     public static final Type<UUID> UUID = of(UuidArgument::uuid, (context, s) -> UuidArgument.getUuid(cast(context), s));
     public static final Type<Integer> TIME = of(TimeArgument::time, IntegerArgumentType::getInteger);
     public static final Type<Integer> SLOT = of(SlotArgument::slot, (context, s) -> SlotArgument.getSlot(cast(context), s));
@@ -47,7 +52,6 @@ public class PrigadierArguments {
     public static final Type<NamespacedKey> NAMESPACE = of(ResourceLocationArgument::id, (context, s) -> fromRL(ResourceLocationArgument.getId(cast(context), s)));
 
 
-    @ApiStatus.Internal
     protected static class Mappers {
 
         protected static NamespacedKey fromRL(ResourceLocation rl) {
@@ -84,11 +88,6 @@ public class PrigadierArguments {
             return (CommandContext<CommandSourceStack>) (Object) stack;
         }
     }
-
-
-
-
-
 
 
     private static <T> Type<T> of(Supplier<ArgumentType<?>> supplier, ExceptionBiFunction<CommandSyntaxException, T, CommandContext<BukkitBrigadierCommandSource>, String> function) {
