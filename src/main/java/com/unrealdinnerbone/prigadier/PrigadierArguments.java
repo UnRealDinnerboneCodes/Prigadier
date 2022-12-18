@@ -10,10 +10,12 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.*;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.NamespacedKey;
@@ -35,7 +37,8 @@ import static com.unrealdinnerbone.prigadier.PrigadierArguments.Mappers.*;
 public class PrigadierArguments {
 
 
-    private static final CommandBuildContext CONTEXT = new CommandBuildContext(RegistryAccess.BUILTIN.get());
+    private static final CommandBuildContext CONTEXT =  Commands.createValidationContext(VanillaRegistries.createLookup());
+
     public static final Type<org.bukkit.entity.Entity> ENTITY = of(EntityArgument::entity, (context, s) -> fromEntity(EntityArgument.getEntity(cast(context), s)));
     public static final Type<List<org.bukkit.entity.Entity>> ENTITIES = of(EntityArgument::entities, (context, s) -> fromEntities(EntityArgument.getEntities(cast(context), s)));
     public static final Type<Player> PLAYER = of(EntityArgument::player, (context, s) -> fromPlayer(EntityArgument.getPlayer(cast(context), s)));
@@ -50,7 +53,6 @@ public class PrigadierArguments {
     public static final Type<Collection<String>> SCORE_HOLDERS = of(ScoreHolderArgument::scoreHolders, (context, s) -> ScoreHolderArgument.getNamesWithDefaultWildcard(cast(context), s));
     public static final Type<DisplaySlot> SCOREBOARD_SLOT = of(ScoreboardSlotArgument::displaySlot, (context, s) -> fromSlotId(ScoreboardSlotArgument.getDisplaySlot(cast(context), s)));
     public static final Type<NamespacedKey> NAMESPACE = of(ResourceLocationArgument::id, (context, s) -> fromRL(ResourceLocationArgument.getId(cast(context), s)));
-
 
     protected static class Mappers {
 

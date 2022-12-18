@@ -4,15 +4,11 @@ import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.data.BuiltinRegistries;
-import net.minecraft.server.commands.ReloadCommand;
 import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 
 import java.util.function.Function;
 
