@@ -14,15 +14,20 @@ import java.util.function.Function;
 
 public class Prigadier {
 
+    @SuppressWarnings("unchecked")
     private static <T extends BukkitBrigadierCommandSource> LiteralCommandNode<T> register(LiteralArgumentBuilder<BukkitBrigadierCommandSource> builder) {
         Object castMagic = builder;
-        return (LiteralCommandNode<T>) DedicatedServer.getServer().getCommands().getDispatcher().register(((LiteralArgumentBuilder<CommandSourceStack>) castMagic));
+        return (LiteralCommandNode<T>) DedicatedServer.getServer().getCommands().getDispatcher().register((LiteralArgumentBuilder<CommandSourceStack>) castMagic);
     }
 
     public static Function<LiteralArgumentBuilder<BukkitBrigadierCommandSource>, LiteralCommandNode<BukkitBrigadierCommandSource>> getRegister() {
         return Prigadier::register;
     }
 
+//    public static Function<LiteralArgumentBuilder<BukkitBrigadierCommandSource>, LiteralCommandNode<BukkitBrigadierCommandSource>> getRegister() {
+//        return Prigadier::register;
+//    }
+    @SuppressWarnings("unchecked")
     public static <T extends BukkitBrigadierCommandSource> RootCommandNode<T> getRoot() {
         return (RootCommandNode<T>) DedicatedServer.getServer().getCommands().getDispatcher().getRoot();
     }
@@ -31,7 +36,10 @@ public class Prigadier {
         return RequiredArgumentBuilder.argument(name, type);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends BukkitBrigadierCommandSource> LiteralArgumentBuilder<T> literal(String name) {
         return (LiteralArgumentBuilder<T>) Commands.literal(name);
     }
+
+
 }
