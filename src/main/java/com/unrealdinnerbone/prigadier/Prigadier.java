@@ -24,9 +24,6 @@ public class Prigadier {
         return Prigadier::register;
     }
 
-//    public static Function<LiteralArgumentBuilder<BukkitBrigadierCommandSource>, LiteralCommandNode<BukkitBrigadierCommandSource>> getRegister() {
-//        return Prigadier::register;
-//    }
     @SuppressWarnings("unchecked")
     public static <T extends BukkitBrigadierCommandSource> RootCommandNode<T> getRoot() {
         return (RootCommandNode<T>) DedicatedServer.getServer().getCommands().getDispatcher().getRoot();

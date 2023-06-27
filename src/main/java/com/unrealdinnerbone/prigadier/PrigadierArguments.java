@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.papermc.paper.adventure.PaperAdventure;
-import io.papermc.paper.math.FinePosition;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.ChatFormatting;
@@ -19,18 +18,14 @@ import net.minecraft.commands.arguments.coordinates.Coordinates;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.NamespacedKey;
-import org.bukkit.StructureType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
-import org.checkerframework.checker.units.qual.C;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,14 +53,15 @@ public class PrigadierArguments {
     public static final Type<Collection<String>> SCORE_HOLDERS = of(ScoreHolderArgument::scoreHolders, (context, s) -> ScoreHolderArgument.getNamesWithDefaultWildcard(cast(context), s));
     public static final Type<DisplaySlot> SCOREBOARD_SLOT = of(ScoreboardSlotArgument::displaySlot, (context, s) -> fromSlotId(ScoreboardSlotArgument.getDisplaySlot(cast(context), s)));
     public static final Type<NamespacedKey> NAMESPACE = of(ResourceLocationArgument::id, (context, s) -> fromRL(ResourceLocationArgument.getId(cast(context), s)));
-
-    public static final Type<Position> POSITION = of(BlockPosArgument::blockPos, (context, s) -> {
-        CommandContext<CommandSourceStack> newContext = cast(context);
-        BlockPos blockPos = newContext.getArgument(s, Coordinates.class).getBlockPos(newContext.getSource());
-        return Position.fine(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-    });
+    public static final Type<Position> POSITION = of(BlockPosArgument::blockPos, PrigadierArguments.Mappers::getPosition);
 
     protected static class Mappers {
+
+        private static Position getPosition(CommandContext<BukkitBrigadierCommandSource> context, String s) {
+            CommandContext<CommandSourceStack> newContext = cast(context);
+            BlockPos blockPos = newContext.getArgument(s, Coordinates.class).getBlockPos(newContext.getSource());
+            return Position.fine(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        }
 
         protected static NamespacedKey fromRL(ResourceLocation rl) {
             return new NamespacedKey(rl.getNamespace(), rl.getPath());
