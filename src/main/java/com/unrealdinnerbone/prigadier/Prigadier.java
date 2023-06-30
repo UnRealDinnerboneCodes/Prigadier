@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.prigadier;
 
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -16,6 +17,10 @@ public class Prigadier {
 
     public static <T extends BukkitBrigadierCommandSource> LiteralCommandNode<T> register(LiteralArgumentBuilder<T> builder) {
         return (LiteralCommandNode<T>) DedicatedServer.getServer().getCommands().getDispatcher().register((LiteralArgumentBuilder<CommandSourceStack>) builder);
+    }
+
+    public static <T extends BukkitBrigadierCommandSource> com.mojang.brigadier.CommandDispatcher<T> getDispatcher() {
+        return (CommandDispatcher<T>) DedicatedServer.getServer().getCommands().getDispatcher();
     }
 
     public static <T extends BukkitBrigadierCommandSource> Function<LiteralArgumentBuilder<T>, LiteralCommandNode<T>> getRegister() {
