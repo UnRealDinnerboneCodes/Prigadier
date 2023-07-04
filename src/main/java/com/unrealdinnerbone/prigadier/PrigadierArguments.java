@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.prigadier;
 
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -23,11 +24,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
@@ -58,12 +61,19 @@ public class PrigadierArguments {
     public static final Type<DisplaySlot> SCOREBOARD_SLOT = of(ScoreboardSlotArgument::displaySlot, (context, s) -> fromSlotId(ScoreboardSlotArgument.getDisplaySlot(cast(context), s)));
     public static final Type<NamespacedKey> NAMESPACE = of(ResourceLocationArgument::id, (context, s) -> fromRL(ResourceLocationArgument.getId(cast(context), s)));
     public static final Type<Position> POSITION = of(BlockPosArgument::blockPos, PrigadierArguments.Mappers::getPosition);
+    public static final Type<Objective> OBJECTIVE = of(ObjectiveArgument::objective, PrigadierArguments.Mappers::getObjective);
 
     public static Type<Integer> time(int min) {
         return of(() -> TimeArgument.time(min), IntegerArgumentType::getInteger);
     }
 
     protected static class Mappers {
+
+        private static Objective getObjective(CommandContext<BukkitBrigadierCommandSource> context, String s) throws CommandSyntaxException {
+            CommandContext<CommandSourceStack> newContext = cast(context);
+            net.minecraft.world.scores.Objective objective = ObjectiveArgument.getObjective(newContext, s);
+            return Bukkit.getScoreboardManager().getMainScoreboard().getObjective(objective.getName());
+        }
 
         private static Position getPosition(CommandContext<BukkitBrigadierCommandSource> context, String s) {
             CommandContext<CommandSourceStack> newContext = cast(context);

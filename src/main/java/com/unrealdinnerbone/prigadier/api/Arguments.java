@@ -9,6 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,4 +30,5 @@ public class Arguments {
         public static Type<DisplaySlot> SCOREBOARD_SLOT = PrigadierArguments.SCOREBOARD_SLOT;
         public static Type<NamespacedKey> NAMESPACE = PrigadierArguments.NAMESPACE;
         public static Type<Position> POSITION = PrigadierArguments.POSITION;
+        public static Type<Objective> OBJECTIVE = PrigadierArguments.OBJECTIVE;
     }
