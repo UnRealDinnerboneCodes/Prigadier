@@ -11,8 +11,9 @@ public class Commands {
             return RequiredArgumentBuilder.argument(name, type);
         }
 
+        @SuppressWarnings("unchecked")
         public static <T extends BukkitBrigadierCommandSource> LiteralArgumentBuilder<T> literal(String name) {
-            return Commands.literal(name);
+            return (LiteralArgumentBuilder<T>) net.minecraft.commands.Commands.literal(name);
         }
 
     }
