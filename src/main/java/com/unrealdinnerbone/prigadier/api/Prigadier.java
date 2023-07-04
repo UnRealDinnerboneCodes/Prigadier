@@ -6,7 +6,7 @@ import net.minecraft.server.dedicated.DedicatedServer;
 
 import java.util.function.Consumer;
 
-class Prigadier {
+public class Prigadier {
 
     public static <T extends BukkitBrigadierCommandSource> CommandDispatcher<T> getDispatcher() {
         return (CommandDispatcher<T>) DedicatedServer.getServer().getCommands().getDispatcher();
