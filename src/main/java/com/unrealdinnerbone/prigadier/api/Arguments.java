@@ -13,7 +13,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import java.util.Collection;
 import java.util.List;
 
-public static class Arguments {
+public class Arguments {
         public static final Type<Entity> ENTITY = PrigadierArguments.ENTITY;
         public static final Type<List<Entity>> ENTITIES = PrigadierArguments.ENTITIES;
         public static Type<Player> PLAYER = PrigadierArguments.PLAYER;
