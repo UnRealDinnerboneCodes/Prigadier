@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.unrealdinnerbone.prigadier.api.util.ExceptionBiFunction;
+import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -26,6 +28,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,12 +37,13 @@ import java.util.function.Supplier;
 
 import static com.unrealdinnerbone.prigadier.PrigadierArguments.Mappers.*;
 
+@ApiStatus.Internal
 public class PrigadierArguments {
 
 
     private static final CommandBuildContext CONTEXT =  Commands.createValidationContext(VanillaRegistries.createLookup());
 
-    public static final Type<org.bukkit.entity.Entity> ENTITY = of(EntityArgument::entity, (context, s) -> fromEntity(EntityArgument.getEntity(cast(context), s)));
+    public static final Type<Entity> ENTITY = of(EntityArgument::entity, (context, s) -> fromEntity(EntityArgument.getEntity(cast(context), s)));
     public static final Type<List<org.bukkit.entity.Entity>> ENTITIES = of(EntityArgument::entities, (context, s) -> fromEntities(EntityArgument.getEntities(cast(context), s)));
     public static final Type<Player> PLAYER = of(EntityArgument::player, (context, s) -> fromPlayer(EntityArgument.getPlayer(cast(context), s)));
     public static final Type<List<Player>> PLAYERS = of(EntityArgument::players, (context, s) -> fromPlayers(EntityArgument.getPlayers(cast(context), s)));
@@ -54,6 +58,10 @@ public class PrigadierArguments {
     public static final Type<DisplaySlot> SCOREBOARD_SLOT = of(ScoreboardSlotArgument::displaySlot, (context, s) -> fromSlotId(ScoreboardSlotArgument.getDisplaySlot(cast(context), s)));
     public static final Type<NamespacedKey> NAMESPACE = of(ResourceLocationArgument::id, (context, s) -> fromRL(ResourceLocationArgument.getId(cast(context), s)));
     public static final Type<Position> POSITION = of(BlockPosArgument::blockPos, PrigadierArguments.Mappers::getPosition);
+
+    public static Type<Integer> time(int min) {
+        return of(() -> TimeArgument.time(min), IntegerArgumentType::getInteger);
+    }
 
     protected static class Mappers {
 
@@ -112,11 +120,5 @@ public class PrigadierArguments {
                 return function.get(context, name);
             }
         };
-    }
-
-    public interface Type<T> {
-        ArgumentType<?> create();
-
-        T parse(CommandContext<BukkitBrigadierCommandSource> context, String name) throws CommandSyntaxException;
     }
 }
