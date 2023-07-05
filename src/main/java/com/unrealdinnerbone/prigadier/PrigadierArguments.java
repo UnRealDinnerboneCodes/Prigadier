@@ -23,6 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.scores.PlayerTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
@@ -30,6 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
@@ -44,6 +46,8 @@ public class PrigadierArguments {
 
 
     private static final CommandBuildContext CONTEXT =  Commands.createValidationContext(VanillaRegistries.createLookup());
+
+    public static final Type<Team> TEAM = of(TeamArgument::team, (context, s) -> fromTeam(TeamArgument.getTeam(cast(context), s)));
 
     public static final Type<Component> COMPONENT = of(ComponentArgument::textComponent, (context, s) -> fromComponent(ComponentArgument.getComponent(cast(context), s)));
 
@@ -93,6 +97,10 @@ public class PrigadierArguments {
     }
 
     protected static class Mappers {
+
+        protected static Team fromTeam(PlayerTeam team) {
+            return Bukkit.getScoreboardManager().getMainScoreboard().getTeam(team.getName());
+        }
 
         private static Objective getObjective(CommandContext<BukkitBrigadierCommandSource> context, String s) throws CommandSyntaxException {
             CommandContext<CommandSourceStack> newContext = cast(context);

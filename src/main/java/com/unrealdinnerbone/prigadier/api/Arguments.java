@@ -3,6 +3,7 @@ package com.unrealdinnerbone.prigadier.api;
 import com.unrealdinnerbone.prigadier.PrigadierArguments;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Team;
 
 import java.util.Collection;
 import java.util.List;
@@ -128,6 +130,14 @@ public interface Arguments {
 
         static Type<Float> floatArg(float min, float max) {
                 return PrigadierArguments.floatArg(min, max);
+        }
+
+        static Type<Component> component() {
+                return PrigadierArguments.COMPONENT;
+        }
+
+        static Type<Team> team() {
+                return PrigadierArguments.TEAM;
         }
 
 
