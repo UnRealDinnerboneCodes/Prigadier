@@ -1,9 +1,7 @@
 package com.unrealdinnerbone.prigadier;
 
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.unrealdinnerbone.prigadier.api.util.ExceptionBiFunction;
@@ -62,6 +60,30 @@ public class PrigadierArguments {
     public static final Type<NamespacedKey> NAMESPACE = of(ResourceLocationArgument::id, (context, s) -> fromRL(ResourceLocationArgument.getId(cast(context), s)));
     public static final Type<Position> POSITION = of(BlockPosArgument::blockPos, PrigadierArguments.Mappers::getPosition);
     public static final Type<Objective> OBJECTIVE = of(ObjectiveArgument::objective, PrigadierArguments.Mappers::getObjective);
+
+    public static final Type<String> WORD = of(StringArgumentType::word, StringArgumentType::getString);
+    public static final Type<String> STRING = of(StringArgumentType::string, StringArgumentType::getString);
+    public static final Type<String> GREEDY_STRING = of(StringArgumentType::greedyString, StringArgumentType::getString);
+    public static final Type<Integer> INTEGER = of(IntegerArgumentType::integer, IntegerArgumentType::getInteger);
+    public static final Type<Boolean> BOOLEAN = of(BoolArgumentType::bool, BoolArgumentType::getBool);
+    public static final Type<Float> FLOAT = of(FloatArgumentType::floatArg, FloatArgumentType::getFloat);
+
+    public static final Type<Double> DOUBLE = of(DoubleArgumentType::doubleArg, DoubleArgumentType::getDouble);
+
+    public static final Type<Long> LONG = of(LongArgumentType::longArg, LongArgumentType::getLong);
+
+    public static Type<Double> doubleArg(double min, double max) {
+        return of(() -> DoubleArgumentType.doubleArg(min, max), DoubleArgumentType::getDouble);
+    }
+    public static Type<Long> longArg(long min, long max) {
+        return of(() -> LongArgumentType.longArg(min, max), LongArgumentType::getLong);
+    }
+    public static Type<Float> floatArg(float min, float max) {
+        return of(() -> FloatArgumentType.floatArg(min, max), FloatArgumentType::getFloat);
+    }
+    public static Type<Integer> integer(int min, int max) {
+        return of(() -> IntegerArgumentType.integer(min, max), IntegerArgumentType::getInteger);
+    }
 
     public static Type<Integer> time(int min) {
         return of(() -> TimeArgument.time(min), IntegerArgumentType::getInteger);
