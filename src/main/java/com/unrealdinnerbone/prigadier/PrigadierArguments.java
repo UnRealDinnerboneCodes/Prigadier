@@ -8,6 +8,7 @@ import com.unrealdinnerbone.prigadier.api.util.ExceptionBiFunction;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.math.Position;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
@@ -43,6 +44,8 @@ public class PrigadierArguments {
 
 
     private static final CommandBuildContext CONTEXT =  Commands.createValidationContext(VanillaRegistries.createLookup());
+
+    public static final Type<Component> COMPONENT = of(ComponentArgument::textComponent, (context, s) -> fromComponent(ComponentArgument.getComponent(cast(context), s)));
 
     public static final Type<Entity> ENTITY = of(EntityArgument::entity, (context, s) -> fromEntity(EntityArgument.getEntity(cast(context), s)));
     public static final Type<List<org.bukkit.entity.Entity>> ENTITIES = of(EntityArgument::entities, (context, s) -> fromEntities(EntityArgument.getEntities(cast(context), s)));
@@ -132,6 +135,11 @@ public class PrigadierArguments {
         protected static NamedTextColor fromColor(ChatFormatting formatting) {
             return NamedTextColor.nearestTo(PaperAdventure.asAdventure(formatting));
         }
+
+        protected static Component fromComponent(net.minecraft.network.chat.Component component) {
+            return PaperAdventure.asAdventure(component);
+        }
+
 
         protected static CommandContext<CommandSourceStack> cast(CommandContext<BukkitBrigadierCommandSource> stack) {
             return (CommandContext<CommandSourceStack>) (Object) stack;
