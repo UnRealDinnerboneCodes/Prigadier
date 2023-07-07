@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 public class Messages
 {
-    public void sendSuccess(BukkitBrigadierCommandSource source, Supplier<net.kyori.adventure.text.Component> feedbackSupplier, boolean broadcastToOps) throws IllegalArgumentException {
+    public static void sendSuccess(BukkitBrigadierCommandSource source, Supplier<net.kyori.adventure.text.Component> feedbackSupplier, boolean broadcastToOps) throws IllegalArgumentException {
         if(source instanceof CommandSourceStack stack) {
             stack.sendSuccess(() -> PaperAdventure.asVanilla(feedbackSupplier.get()), broadcastToOps);
         }else {
