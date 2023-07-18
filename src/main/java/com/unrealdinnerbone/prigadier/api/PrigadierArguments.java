@@ -17,6 +17,8 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.*;
+import net.minecraft.commands.arguments.blocks.BlockInput;
+import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
 import net.minecraft.commands.arguments.item.ItemArgument;
@@ -27,6 +29,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -76,6 +79,8 @@ public class PrigadierArguments {
     public static final Type<Float> FLOAT = of(FloatArgumentType::floatArg, FloatArgumentType::getFloat);
     public static final Type<Double> DOUBLE = of(DoubleArgumentType::doubleArg, DoubleArgumentType::getDouble);
     public static final Type<Long> LONG = of(LongArgumentType::longArg, LongArgumentType::getLong);
+    public static final Type<Material> BLOCK_STATE = of(() -> BlockStateArgument.block(CONTEXT), (context, s) -> Mappers.fromBlockState(BlockStateArgument.getBlock(cast(context), s)));
+
 
     public static <T> Type<T> createCustom(ExceptionFunction<CommandSyntaxException, T, String> mapper, Supplier<List<String>> suggestions) {
         return new Type<>() {
@@ -114,6 +119,10 @@ public class PrigadierArguments {
     }
 
     protected static class Mappers {
+
+        private static Material fromBlockState(BlockInput block) {
+            return block.getState().getBukkitMaterial();
+        }
 
         protected static Team fromTeam(PlayerTeam team) {
             return Bukkit.getScoreboardManager().getMainScoreboard().getTeam(team.getName());

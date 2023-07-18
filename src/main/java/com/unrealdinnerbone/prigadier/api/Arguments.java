@@ -6,6 +6,7 @@ import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -144,6 +145,10 @@ public interface Arguments {
 
         static <T> Type<T> custom(ExceptionFunction<CommandSyntaxException, T, String> mapper, Supplier<List<String>> suggestions) {
                 return PrigadierArguments.createCustom(mapper, suggestions);
+        }
+
+        static Type<Material> blockState() {
+                return PrigadierArguments.BLOCK_STATE;
         }
 
 
