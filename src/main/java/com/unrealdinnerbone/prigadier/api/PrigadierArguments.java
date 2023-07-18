@@ -1,10 +1,12 @@
-package com.unrealdinnerbone.prigadier;
+package com.unrealdinnerbone.prigadier.api;
 
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.mojang.brigadier.arguments.*;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.unrealdinnerbone.prigadier.api.util.ExceptionBiFunction;
+import com.unrealdinnerbone.prigadier.api.util.ExceptionFunction;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.math.Position;
@@ -37,9 +39,10 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static com.unrealdinnerbone.prigadier.PrigadierArguments.Mappers.*;
+import static com.unrealdinnerbone.prigadier.api.PrigadierArguments.Mappers.*;
 
 @ApiStatus.Internal
 public class PrigadierArguments {
@@ -48,9 +51,7 @@ public class PrigadierArguments {
     private static final CommandBuildContext CONTEXT =  Commands.createValidationContext(VanillaRegistries.createLookup());
 
     public static final Type<Team> TEAM = of(TeamArgument::team, (context, s) -> fromTeam(TeamArgument.getTeam(cast(context), s)));
-
     public static final Type<Component> COMPONENT = of(ComponentArgument::textComponent, (context, s) -> fromComponent(ComponentArgument.getComponent(cast(context), s)));
-
     public static final Type<Entity> ENTITY = of(EntityArgument::entity, (context, s) -> fromEntity(EntityArgument.getEntity(cast(context), s)));
     public static final Type<List<org.bukkit.entity.Entity>> ENTITIES = of(EntityArgument::entities, (context, s) -> fromEntities(EntityArgument.getEntities(cast(context), s)));
     public static final Type<Player> PLAYER = of(EntityArgument::player, (context, s) -> fromPlayer(EntityArgument.getPlayer(cast(context), s)));
@@ -67,17 +68,33 @@ public class PrigadierArguments {
     public static final Type<NamespacedKey> NAMESPACE = of(ResourceLocationArgument::id, (context, s) -> fromRL(ResourceLocationArgument.getId(cast(context), s)));
     public static final Type<Position> POSITION = of(BlockPosArgument::blockPos, PrigadierArguments.Mappers::getPosition);
     public static final Type<Objective> OBJECTIVE = of(ObjectiveArgument::objective, PrigadierArguments.Mappers::getObjective);
-
     public static final Type<String> WORD = of(StringArgumentType::word, StringArgumentType::getString);
     public static final Type<String> STRING = of(StringArgumentType::string, StringArgumentType::getString);
     public static final Type<String> GREEDY_STRING = of(StringArgumentType::greedyString, StringArgumentType::getString);
     public static final Type<Integer> INTEGER = of(IntegerArgumentType::integer, IntegerArgumentType::getInteger);
     public static final Type<Boolean> BOOLEAN = of(BoolArgumentType::bool, BoolArgumentType::getBool);
     public static final Type<Float> FLOAT = of(FloatArgumentType::floatArg, FloatArgumentType::getFloat);
-
     public static final Type<Double> DOUBLE = of(DoubleArgumentType::doubleArg, DoubleArgumentType::getDouble);
-
     public static final Type<Long> LONG = of(LongArgumentType::longArg, LongArgumentType::getLong);
+
+    public static <T> Type<T> createCustom(ExceptionFunction<CommandSyntaxException, T, String> mapper, Supplier<List<String>> suggestions) {
+        return new Type<>() {
+            @Override
+            public ArgumentType<?> create() {
+                return StringArgumentType.word();
+            }
+
+            @Override
+            public T parse(CommandContext<BukkitBrigadierCommandSource> context, String name) throws CommandSyntaxException {
+                return mapper.get(StringArgumentType.getString(context, name));
+            }
+
+            @Override
+            public RequiredArgumentBuilder<BukkitBrigadierCommandSource, ?> create(String name) {
+                return Type.super.create(name).suggests((context, builder) -> Suggestions.strings(builder, suggestions.get()));
+            }
+        };
+    }
 
     public static Type<Double> doubleArg(double min, double max) {
         return of(() -> DoubleArgumentType.doubleArg(min, max), DoubleArgumentType::getDouble);

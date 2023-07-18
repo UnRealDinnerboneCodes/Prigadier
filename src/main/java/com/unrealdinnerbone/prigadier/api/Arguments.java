@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.prigadier.api;
 
-import com.unrealdinnerbone.prigadier.PrigadierArguments;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.unrealdinnerbone.prigadier.api.util.ExceptionFunction;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
@@ -15,6 +16,7 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 public interface Arguments {
         static Type<Entity> entity() {
@@ -138,6 +140,10 @@ public interface Arguments {
 
         static Type<Team> team() {
                 return PrigadierArguments.TEAM;
+        }
+
+        static <T> Type<T> custom(ExceptionFunction<CommandSyntaxException, T, String> mapper, Supplier<List<String>> suggestions) {
+                return PrigadierArguments.createCustom(mapper, suggestions);
         }
 
 
