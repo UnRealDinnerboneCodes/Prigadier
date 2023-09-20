@@ -15,4 +15,16 @@ public class Messages
             throw new IllegalArgumentException("Source must be a CommandSourceStack");
         }
     }
+
+    public static void sendSuccessMessage(BukkitBrigadierCommandSource source, Supplier<String> feedbackSupplier, boolean broadcastToOps) throws IllegalArgumentException {
+        sendSuccess(source, () -> net.kyori.adventure.text.Component.text(feedbackSupplier.get()), broadcastToOps);
+    }
+
+    public static void sendSuccess(BukkitBrigadierCommandSource source, Supplier<net.kyori.adventure.text.Component> feedbackSupplier) throws IllegalArgumentException {
+        sendSuccess(source, feedbackSupplier, true);
+    }
+
+    public static void sendSuccessMessage(BukkitBrigadierCommandSource source, Supplier<String> feedbackSupplier) throws IllegalArgumentException {
+        sendSuccessMessage(source, feedbackSupplier, true);
+    }
 }
