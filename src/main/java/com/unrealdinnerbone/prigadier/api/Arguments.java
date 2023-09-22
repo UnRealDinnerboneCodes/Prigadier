@@ -17,6 +17,7 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public interface Arguments {
@@ -48,7 +49,7 @@ public interface Arguments {
                 return PrigadierArguments.ITEM;
         }
 
-        static Type<java.util.UUID> uuid() {
+        static Type<UUID> uuid() {
                 return PrigadierArguments.UUID;
         }
 
