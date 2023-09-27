@@ -15,7 +15,6 @@ public record BasicType<T>(Supplier<ArgumentType<?>> creator, ExceptionBiFunctio
         return creator.get();
     }
 
-
     @Override
     public T parse(CommandContext<BukkitBrigadierCommandSource> context, String name) throws CommandSyntaxException {
         return parse.get(context, name);

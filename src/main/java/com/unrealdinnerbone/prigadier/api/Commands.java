@@ -7,13 +7,13 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 public class Commands {
 
-        public static <T extends BukkitBrigadierCommandSource, B> RequiredArgumentBuilder<T, B> argument(String name, ArgumentType<B> type) {
-            return RequiredArgumentBuilder.argument(name, type);
-        }
-
-        @SuppressWarnings("unchecked")
-        public static <T extends BukkitBrigadierCommandSource> LiteralArgumentBuilder<T> literal(String name) {
-            return (LiteralArgumentBuilder<T>) net.minecraft.commands.Commands.literal(name);
-        }
-
+    public static <T extends BukkitBrigadierCommandSource, B> RequiredArgumentBuilder<T, B> argument(String name, ArgumentType<B> type) {
+        return RequiredArgumentBuilder.argument(name, type);
     }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends BukkitBrigadierCommandSource> LiteralArgumentBuilder<T> literal(String name) {
+        return (LiteralArgumentBuilder<T>) net.minecraft.commands.Commands.literal(name);
+    }
+
+}

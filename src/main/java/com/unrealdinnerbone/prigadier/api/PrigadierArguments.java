@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.prigadier.api;
 
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -31,6 +32,7 @@ import net.minecraft.world.scores.PlayerTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -49,8 +51,7 @@ import static com.unrealdinnerbone.prigadier.api.PrigadierArguments.Mappers.*;
 @ApiStatus.Internal
 public class PrigadierArguments {
 
-
-    private static final CommandBuildContext CONTEXT =  Commands.createValidationContext(VanillaRegistries.createLookup());
+    private static final CommandBuildContext CONTEXT = Commands.createValidationContext(VanillaRegistries.createLookup());
 
     public static final BasicType<Team> TEAM = of(TeamArgument::team, (context, s) -> fromTeam(TeamArgument.getTeam(cast(context), s)));
     public static final BasicType<Component> COMPONENT = of(ComponentArgument::textComponent, (context, s) -> fromComponent(ComponentArgument.getComponent(cast(context), s)));
@@ -58,7 +59,7 @@ public class PrigadierArguments {
     public static final BasicType<List<Entity>> ENTITIES = of(EntityArgument::entities, (context, s) -> fromEntities(EntityArgument.getEntities(cast(context), s)));
     public static final BasicType<Player> PLAYER = of(EntityArgument::player, (context, s) -> fromPlayer(EntityArgument.getPlayer(cast(context), s)));
     public static final BasicType<List<Player>> PLAYERS = of(EntityArgument::players, (context, s) -> fromPlayers(EntityArgument.getPlayers(cast(context), s)));
-    public static final BasicType<NamedTextColor> COLOR = of(EntityArgument::players, (context, s) -> fromColor(ColorArgument.getColor(cast(context), s)));
+    public static final BasicType<NamedTextColor> COLOR = of(ColorArgument::color, (context, s) -> fromColor(ColorArgument.getColor(cast(context), s)));
     public static final BasicType<Float> ANGLE = of(AngleArgument::angle, (context, s) -> (AngleArgument.getAngle(cast(context), s)));
     public static final BasicType<ItemStack> ITEM = of(() -> ItemArgument.item(CONTEXT), (context, s) -> fromItemInput(ItemArgument.getItem(cast(context), s)));
     public static final BasicType<UUID> UUID = of(UuidArgument::uuid, (context, s) -> UuidArgument.getUuid(cast(context), s));
@@ -79,6 +80,17 @@ public class PrigadierArguments {
     public static final BasicType<Double> DOUBLE = of(DoubleArgumentType::doubleArg, DoubleArgumentType::getDouble);
     public static final BasicType<Long> LONG = of(LongArgumentType::longArg, LongArgumentType::getLong);
     public static final BasicType<Material> BLOCK_STATE = of(() -> BlockStateArgument.block(CONTEXT), (context, s) -> Mappers.fromBlockState(BlockStateArgument.getBlock(cast(context), s)));
+
+    public static final BasicType<OfflinePlayer> OFFLINE_PLAYER = of(GameProfileArgument::gameProfile, (context, s) -> {
+        Collection<GameProfile> gameProfiles = GameProfileArgument.getGameProfiles(cast(context), s);
+        if(gameProfiles.size() != 1) {
+            throw EntityArgument.ERROR_NOT_SINGLE_PLAYER.create();
+        }else {
+            return Mappers.fromGameProfile(gameProfiles.stream().findFirst().get());
+        }
+    });
+
+    public static final BasicType<List<OfflinePlayer>> OFFLINE_PLAYERS = of(GameProfileArgument::gameProfile, (context, s) -> Mappers.fromGameProfiles(GameProfileArgument.getGameProfiles(cast(context), s)));
 
 
     public static <T> BasicType<T> createCustom(ExceptionFunction<CommandSyntaxException, T, String> mapper, Supplier<List<String>> suggestions) {
@@ -158,6 +170,13 @@ public class PrigadierArguments {
             return PaperAdventure.asAdventure(component);
         }
 
+        protected static OfflinePlayer fromGameProfile(com.mojang.authlib.GameProfile gameProfile) {
+            return Bukkit.getOfflinePlayer(gameProfile.getId());
+        }
+
+        protected static List<OfflinePlayer> fromGameProfiles(Collection<com.mojang.authlib.GameProfile> gameProfiles) {
+            return gameProfiles.stream().map(Mappers::fromGameProfile).toList();
+        }
 
         protected static CommandContext<CommandSourceStack> cast(CommandContext<BukkitBrigadierCommandSource> stack) {
             return (CommandContext<CommandSourceStack>) (Object) stack;

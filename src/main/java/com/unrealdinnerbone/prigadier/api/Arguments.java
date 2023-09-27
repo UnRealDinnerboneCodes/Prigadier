@@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -142,6 +143,14 @@ public interface Arguments {
 
         static Type<Team> team() {
                 return PrigadierArguments.TEAM;
+        }
+
+        static Type<OfflinePlayer> offlinePlayer() {
+                return PrigadierArguments.OFFLINE_PLAYER;
+        }
+
+        static Type<List<OfflinePlayer>> offlinePlayers() {
+                return PrigadierArguments.OFFLINE_PLAYERS;
         }
 
         static <T> Type<T> custom(ExceptionFunction<CommandSyntaxException, T, String> mapper, Supplier<List<String>> suggestions) {
