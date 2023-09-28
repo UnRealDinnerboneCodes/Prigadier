@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.BuiltInExceptionProvider;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
+import org.bukkit.entity.Player;
 
 public class Exceptions {
     public static final BuiltInExceptionProvider BUILT_IN_EXCEPTIONS = CommandSyntaxException.BUILT_IN_EXCEPTIONS;
@@ -13,10 +14,11 @@ public class Exceptions {
     public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = CommandSourceStack.ERROR_NOT_ENTITY;
 
 
-    public static void assertPlayer(CommandContext<BukkitBrigadierCommandSource> context) throws CommandSyntaxException {
-        if(context.getSource().getBukkitSender() == null) {
+    public static Player assertPlayer(CommandContext<BukkitBrigadierCommandSource> context) throws CommandSyntaxException {
+        if(context.getSource().getBukkitSender() == null || !(context.getSource().getBukkitSender() instanceof Player player)) {
             throw ERROR_NOT_PLAYER.create();
         }
+        return player;
     }
 }
     
