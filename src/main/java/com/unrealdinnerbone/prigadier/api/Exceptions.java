@@ -13,7 +13,7 @@ public class Exceptions {
     public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = CommandSourceStack.ERROR_NOT_ENTITY;
 
 
-    public void assertPlayer(CommandContext<BukkitBrigadierCommandSource> context) throws CommandSyntaxException {
+    public static void assertPlayer(CommandContext<BukkitBrigadierCommandSource> context) throws CommandSyntaxException {
         if(context.getSource().getBukkitSender() == null) {
             throw ERROR_NOT_PLAYER.create();
         }
