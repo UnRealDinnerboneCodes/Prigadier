@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.prigadier.api;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.unrealdinnerbone.prigadier.api.util.BasicType;
 import com.unrealdinnerbone.prigadier.api.util.ExceptionFunction;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
@@ -155,6 +156,10 @@ public interface Arguments {
 
         static <T> Type<T> custom(ExceptionFunction<CommandSyntaxException, T, String> mapper, Supplier<List<String>> suggestions) {
                 return PrigadierArguments.createCustom(mapper, suggestions);
+        }
+
+        static <T extends Enum<T> & net.kyori.adventure.key.Keyed> BasicType<T> keyedEnum(Class<T> clazz) {
+                return PrigadierArguments.enumArgument(clazz);
         }
 
         static Type<Material> blockState() {

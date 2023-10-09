@@ -2,9 +2,11 @@ package com.unrealdinnerbone.prigadier.api;
 
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.unrealdinnerbone.prigadier.api.util.ExceptionBiFunction;
 import com.unrealdinnerbone.prigadier.api.util.ExceptionFunction;
 import com.unrealdinnerbone.prigadier.api.util.BasicType;
@@ -39,12 +41,8 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.ApiStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static com.unrealdinnerbone.prigadier.api.PrigadierArguments.Mappers.*;
@@ -115,6 +113,23 @@ public class PrigadierArguments {
         return of(() -> TimeArgument.time(min), IntegerArgumentType::getInteger);
     }
 
+    protected static final DynamicCommandExceptionType INVALID_KEY = new DynamicCommandExceptionType((object) -> new LiteralMessage("Unknown key: " + object.toString()));
+    public static <T extends Enum<T> & net.kyori.adventure.key.Keyed> BasicType<T> enumArgument(Class<T> clazz) {
+        return createCustom(string -> {
+            for (T enumConstant : clazz.getEnumConstants()) {
+                String string1 = enumConstant.key().asString();
+                if(string1.equalsIgnoreCase(string)) {
+                    return enumConstant;
+                }
+            }
+            throw INVALID_KEY.create(string);
+        }, () -> {
+            List<String> strings = new ArrayList<>();
+            Arrays.stream(clazz.getEnumConstants()).map(enumConstant -> enumConstant.key().asString()).forEach(strings::add);
+            return strings;
+        });
+    }
+
     protected static class Mappers {
 
         private static Material fromBlockState(BlockInput block) {
@@ -136,7 +151,7 @@ public class PrigadierArguments {
             BlockPos blockPos = newContext.getArgument(s, Coordinates.class).getBlockPos(newContext.getSource());
             return Position.fine(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         }
-        
+
         protected static NamespacedKey fromRL(ResourceLocation rl) {
             return new NamespacedKey(rl.getNamespace(), rl.getPath());
         }
