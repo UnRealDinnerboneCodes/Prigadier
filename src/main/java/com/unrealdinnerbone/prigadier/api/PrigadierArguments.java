@@ -4,12 +4,14 @@ import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.*;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.unrealdinnerbone.prigadier.api.util.ExceptionBiFunction;
 import com.unrealdinnerbone.prigadier.api.util.ExceptionFunction;
 import com.unrealdinnerbone.prigadier.api.util.BasicType;
+import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
@@ -114,20 +116,26 @@ public class PrigadierArguments {
     }
 
     protected static final DynamicCommandExceptionType INVALID_KEY = new DynamicCommandExceptionType((object) -> new LiteralMessage("Unknown key: " + object.toString()));
-    public static <T extends Enum<T> & net.kyori.adventure.key.Keyed> BasicType<T> enumArgument(Class<T> clazz) {
-        return createCustom(string -> {
-            for (T enumConstant : clazz.getEnumConstants()) {
-                String string1 = enumConstant.key().asString();
-                if(string1.equalsIgnoreCase(string)) {
-                    return enumConstant;
+    public static <T extends Enum<T> & net.kyori.adventure.key.Keyed> Type<T> enumArgument(Class<T> clazz) {
+
+        return new Type<T>() {
+            @Override
+            public T parse(CommandContext<BukkitBrigadierCommandSource> context, String name) throws CommandSyntaxException {
+                NamespacedKey namespacedKey = NAMESPACE.parse().get(context, name);
+                for (T enumConstant : clazz.getEnumConstants()) {
+                    if(enumConstant.key().equals(namespacedKey.key())) {
+                        return enumConstant;
+                    }
                 }
+                throw INVALID_KEY.create(namespacedKey.toString());
             }
-            throw INVALID_KEY.create(string);
-        }, () -> {
-            List<String> strings = new ArrayList<>();
-            Arrays.stream(clazz.getEnumConstants()).map(enumConstant -> enumConstant.key().asString()).forEach(strings::add);
-            return strings;
-        });
+
+            @Override
+            public RequiredArgumentBuilder<BukkitBrigadierCommandSource, ?> create(String name) {
+                return NAMESPACE.create(name)
+                        .suggests((context, builder) -> Suggestions.strings(builder, Arrays.stream(clazz.getEnumConstants()).map(enumConstant -> enumConstant.key().asString()).toList()));
+            }
+        };
     }
 
     protected static class Mappers {

@@ -158,7 +158,7 @@ public interface Arguments {
                 return PrigadierArguments.createCustom(mapper, suggestions);
         }
 
-        static <T extends Enum<T> & net.kyori.adventure.key.Keyed> BasicType<T> keyedEnum(Class<T> clazz) {
+        static <T extends Enum<T> & net.kyori.adventure.key.Keyed> Type<T> keyedEnum(Class<T> clazz) {
                 return PrigadierArguments.enumArgument(clazz);
         }
 
