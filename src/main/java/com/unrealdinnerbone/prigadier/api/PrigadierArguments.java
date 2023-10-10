@@ -137,7 +137,15 @@ public class PrigadierArguments {
             @Override
             public RequiredArgumentBuilder<BukkitBrigadierCommandSource, ?> create(String name) {
                 return NAMESPACE.create(name)
-                        .suggests((context, builder) -> Suggestions.strings(builder, Arrays.stream(clazz.getEnumConstants()).map(enumConstant -> enumConstant.key().asString()).toList()));
+                        .suggests((context, builder) -> {
+                            List<String> list = Arrays.stream(clazz.getEnumConstants())
+                                    .map(PrigadierArguments::getKey)
+                                    .filter(Optional::isPresent)
+                                    .map(Optional::get)
+                                    .map(Key::asString)
+                                    .toList();
+                            return Suggestions.strings(builder, list);
+                        });
             }
         };
     }
