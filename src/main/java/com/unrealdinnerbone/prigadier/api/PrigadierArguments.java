@@ -14,6 +14,7 @@ import com.unrealdinnerbone.prigadier.api.util.BasicType;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.math.Position;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.ChatFormatting;
@@ -123,8 +124,11 @@ public class PrigadierArguments {
             public T parse(CommandContext<BukkitBrigadierCommandSource> context, String name) throws CommandSyntaxException {
                 NamespacedKey namespacedKey = NAMESPACE.parse().get(context, name);
                 for (T enumConstant : clazz.getEnumConstants()) {
-                    if(enumConstant.key().equals(namespacedKey.key())) {
-                        return enumConstant;
+                    Optional<Key> key = getKey(enumConstant);
+                    if(key.isPresent()) {
+                        if(key.get().equals(namespacedKey)) {
+                            return enumConstant;
+                        }
                     }
                 }
                 throw INVALID_KEY.create(namespacedKey.toString());
@@ -136,6 +140,14 @@ public class PrigadierArguments {
                         .suggests((context, builder) -> Suggestions.strings(builder, Arrays.stream(clazz.getEnumConstants()).map(enumConstant -> enumConstant.key().asString()).toList()));
             }
         };
+    }
+
+    private static <T extends Enum<T> & net.kyori.adventure.key.Keyed> Optional<Key> getKey(T value) {
+        try {
+            return Optional.of(value.key());
+        }catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     protected static class Mappers {
