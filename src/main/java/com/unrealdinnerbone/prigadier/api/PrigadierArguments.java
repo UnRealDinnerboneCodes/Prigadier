@@ -37,6 +37,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -81,7 +82,7 @@ public class PrigadierArguments {
     public static final BasicType<Float> FLOAT = of(FloatArgumentType::floatArg, FloatArgumentType::getFloat);
     public static final BasicType<Double> DOUBLE = of(DoubleArgumentType::doubleArg, DoubleArgumentType::getDouble);
     public static final BasicType<Long> LONG = of(LongArgumentType::longArg, LongArgumentType::getLong);
-    public static final BasicType<Material> BLOCK_STATE = of(() -> BlockStateArgument.block(CONTEXT), (context, s) -> Mappers.fromBlockState(BlockStateArgument.getBlock(cast(context), s)));
+    public static final BasicType<BlockData> BLOCK_STATE = of(() -> BlockStateArgument.block(CONTEXT), (context, s) -> Mappers.fromBlockState(BlockStateArgument.getBlock(cast(context), s)));
 
     public static final BasicType<OfflinePlayer> OFFLINE_PLAYER = of(GameProfileArgument::gameProfile, (context, s) -> {
         Collection<GameProfile> gameProfiles = GameProfileArgument.getGameProfiles(cast(context), s);
@@ -160,8 +161,8 @@ public class PrigadierArguments {
 
     protected static class Mappers {
 
-        private static Material fromBlockState(BlockInput block) {
-            return block.getState().getBukkitMaterial();
+        private static BlockData fromBlockState(BlockInput block) {
+            return block.getState().createCraftBlockData();
         }
 
         protected static Team fromTeam(PlayerTeam team) {

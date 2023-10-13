@@ -10,6 +10,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -162,7 +163,7 @@ public interface Arguments {
                 return PrigadierArguments.enumArgument(clazz);
         }
 
-        static Type<Material> blockState() {
+        static Type<BlockData> blockState() {
                 return PrigadierArguments.BLOCK_STATE;
         }
 
