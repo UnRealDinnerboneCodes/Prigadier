@@ -5,6 +5,7 @@ import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.commands.arguments.selector.options.EntitySelectorOptions;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.Nullable;

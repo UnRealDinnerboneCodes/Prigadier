@@ -7,9 +7,9 @@ import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Particle;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -153,6 +153,10 @@ public interface Arguments {
 
         static Type<List<OfflinePlayer>> offlinePlayers() {
                 return PrigadierArguments.OFFLINE_PLAYERS;
+        }
+
+        static BasicType<Particle> particle() {
+                return PrigadierArguments.PARTICLE;
         }
 
         static <T> Type<T> custom(ExceptionFunction<CommandSyntaxException, T, String> mapper, Supplier<List<String>> suggestions) {

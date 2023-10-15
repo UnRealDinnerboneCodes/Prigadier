@@ -29,15 +29,15 @@ import net.minecraft.commands.arguments.coordinates.Coordinates;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.craftbukkit.v1_20_R1.CraftParticle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -82,6 +82,8 @@ public class PrigadierArguments {
     public static final BasicType<Float> FLOAT = of(FloatArgumentType::floatArg, FloatArgumentType::getFloat);
     public static final BasicType<Double> DOUBLE = of(DoubleArgumentType::doubleArg, DoubleArgumentType::getDouble);
     public static final BasicType<Long> LONG = of(LongArgumentType::longArg, LongArgumentType::getLong);
+
+    public static final BasicType<Particle> PARTICLE = of(() -> ParticleArgument.particle(CONTEXT), (context, s) -> CraftParticle.toBukkit(ParticleArgument.getParticle(cast(context), s)));
     public static final BasicType<BlockData> BLOCK_STATE = of(() -> BlockStateArgument.block(CONTEXT), (context, s) -> Mappers.fromBlockState(BlockStateArgument.getBlock(cast(context), s)));
 
     public static final BasicType<OfflinePlayer> OFFLINE_PLAYER = of(GameProfileArgument::gameProfile, (context, s) -> {
