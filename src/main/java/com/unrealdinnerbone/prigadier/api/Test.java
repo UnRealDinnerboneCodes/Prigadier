@@ -1,62 +1,21 @@
 package com.unrealdinnerbone.prigadier.api;
 
-import com.mojang.brigadier.StringReader;
-import io.papermc.paper.adventure.PaperAdventure;
-import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.selector.EntitySelectorParser;
-import net.minecraft.commands.arguments.selector.options.EntitySelectorOptions;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.chat.Component;
-import org.bukkit.entity.Entity;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
+import org.bukkit.craftbukkit.v1_20_R1.CraftParticle;
+import org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey;
 
 public class Test {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Test.class);
-    public static String METHOD_NAME = "a";
-    public static void registerI(String id, EntitySelectorOptions.Modifier handler, Predicate<EntitySelectorParser> condition, Component description) {
-        try {
-            Method register = EntitySelectorOptions.class.getDeclaredMethod(METHOD_NAME, String.class, EntitySelectorOptions.Modifier.class, Predicate.class, Component.class);
-            register.setAccessible(true);
-            register.invoke(null, id, handler, condition, description);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    public static NamespacedKey getParticleKey(Particle particle) {
+        ParticleOptions nms = CraftParticle.toNMS(particle);
+        ParticleType<?> type = nms.getType();
+        ResourceLocation key = BuiltInRegistries.PARTICLE_TYPE.getKey(type);
+        return CraftNamespacedKey.fromMinecraft(key);
     }
 
-    public static void initTest() {
-        registerI("same_world", handler -> {
-            boolean sameWorld = handler.getReader().readBoolean();
-            if(sameWorld) {
-                handler.setWorldLimited();
-            }
-        }, entitySelectorParser -> true,
-                Component.literal("Same World"));
-    }
-
-    public static void register(String id, Test2 test2, Supplier<List<String>> supplier, net.kyori.adventure.text.Component description) {
-        registerI(id, reader -> {
-            boolean invert = reader.shouldInvertValue();
-            String string = reader.getReader().readUnquotedString();
-//            reader.setSuggestions((suggestionsBuilder, suggestionsBuilderConsumer) -> {
-//                SharedSuggestionProvider.suggest(supplier.get(), suggestionsBuilder);
-//                return suggestionsBuilder.buildFuture();
-//            });
-            reader.addPredicate(entity -> test2.test(invert, string, entity.getBukkitEntity()));
-        }, reader -> true, PaperAdventure.asVanilla(description));
-
-    }
-
-    public static interface Test2 {
-        public boolean test(boolean invert, String string, Entity entity);
-    }
 }
