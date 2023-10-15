@@ -10,6 +10,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -155,12 +156,12 @@ public interface Arguments {
                 return PrigadierArguments.OFFLINE_PLAYERS;
         }
 
-        static BasicType<Particle> particle() {
+        static Type<Particle> particle() {
                 return PrigadierArguments.PARTICLE;
         }
 
-        static <T> Type<T> custom(ExceptionFunction<CommandSyntaxException, T, String> mapper, Supplier<List<String>> suggestions) {
-                return PrigadierArguments.createCustom(mapper, suggestions);
+        static Type<Sound> sound() {
+                return PrigadierArguments.SOUND;
         }
 
         static <T extends Enum<T> & net.kyori.adventure.key.Keyed> Type<T> keyedEnum(Class<T> clazz) {

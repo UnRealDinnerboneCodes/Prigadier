@@ -8,6 +8,8 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.unrealdinnerbone.prigadier.api.util.ExceptionBiFunction;
 import com.unrealdinnerbone.prigadier.api.util.ExceptionFunction;
 import com.unrealdinnerbone.prigadier.api.util.BasicType;
@@ -21,6 +23,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.*;
 import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
@@ -28,16 +31,20 @@ import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.scores.PlayerTeam;
 import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.v1_20_R1.CraftParticle;
+import org.bukkit.craftbukkit.v1_20_R1.CraftSound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -47,6 +54,7 @@ import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 import static com.unrealdinnerbone.prigadier.api.PrigadierArguments.Mappers.*;
@@ -83,6 +91,27 @@ public class PrigadierArguments {
     public static final BasicType<Double> DOUBLE = of(DoubleArgumentType::doubleArg, DoubleArgumentType::getDouble);
     public static final BasicType<Long> LONG = of(LongArgumentType::longArg, LongArgumentType::getLong);
 
+    public static final Type<Sound> SOUND = new Type<>() {
+
+        private static final DynamicCommandExceptionType ERROR_UNKNOWN_SOUND = new DynamicCommandExceptionType((object) -> new LiteralMessage("Unknown sound: " + object.toString()));
+
+        @Override
+        public Sound parse(CommandContext<BukkitBrigadierCommandSource> context, String name) throws CommandSyntaxException {
+            ResourceLocation sound = ResourceLocationArgument.getId(cast(context), "sound");
+            SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.get(sound);
+            if (soundEvent == null) {
+                throw ERROR_UNKNOWN_SOUND.create(sound);
+            }
+            return CraftSound.getBukkit(soundEvent);
+        }
+
+        @Override
+        public RequiredArgumentBuilder<BukkitBrigadierCommandSource, ?> create(String name) {
+            return com.unrealdinnerbone.prigadier.api.Commands.argument(name, ResourceLocationArgument.id())
+                    .suggests(((context, builder) -> SuggestionProviders.AVAILABLE_SOUNDS.getSuggestions(cast(context), builder)));
+        }
+    };
+
     public static final BasicType<Particle> PARTICLE = of(() -> ParticleArgument.particle(CONTEXT), (context, s) -> CraftParticle.toBukkit(ParticleArgument.getParticle(cast(context), s)));
     public static final BasicType<BlockData> BLOCK_STATE = of(() -> BlockStateArgument.block(CONTEXT), (context, s) -> Mappers.fromBlockState(BlockStateArgument.getBlock(cast(context), s)));
 
@@ -98,9 +127,6 @@ public class PrigadierArguments {
     public static final BasicType<List<OfflinePlayer>> OFFLINE_PLAYERS = of(GameProfileArgument::gameProfile, (context, s) -> Mappers.fromGameProfiles(GameProfileArgument.getGameProfiles(cast(context), s)));
 
 
-    public static <T> BasicType<T> createCustom(ExceptionFunction<CommandSyntaxException, T, String> mapper, Supplier<List<String>> suggestions) {
-        return of(StringArgumentType::word, (context, s) -> mapper.get(StringArgumentType.getString(context, s)));
-    }
 
     public static BasicType<Double> doubleArg(double min, double max) {
         return of(() -> DoubleArgumentType.doubleArg(min, max), DoubleArgumentType::getDouble);
