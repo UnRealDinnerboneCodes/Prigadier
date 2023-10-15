@@ -97,7 +97,7 @@ public class PrigadierArguments {
 
         @Override
         public Sound parse(CommandContext<BukkitBrigadierCommandSource> context, String name) throws CommandSyntaxException {
-            ResourceLocation sound = ResourceLocationArgument.getId(cast(context), "sound");
+            ResourceLocation sound = ResourceLocationArgument.getId(cast(context), name);
             SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.get(sound);
             if (soundEvent == null) {
                 throw ERROR_UNKNOWN_SOUND.create(sound);
