@@ -1,8 +1,7 @@
 package com.unrealdinnerbone.prigadier.api;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.unrealdinnerbone.prigadier.api.util.BasicType;
-import com.unrealdinnerbone.prigadier.api.util.ExceptionFunction;
+import com.destroystokyo.paper.ParticleBuilder;
+import com.unrealdinnerbone.prigadier.PrigadierArguments;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
@@ -22,7 +21,6 @@ import org.bukkit.scoreboard.Team;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 public interface Arguments {
         static Type<Entity> entity() {
@@ -156,12 +154,20 @@ public interface Arguments {
                 return PrigadierArguments.OFFLINE_PLAYERS;
         }
 
-        static Type<Particle> particle() {
-                return PrigadierArguments.PARTICLE;
+        static Type<ParticleBuilder> particle() {
+                return PrigadierArguments.PARTICLE_BUILDER;
         }
 
         static Type<Sound> sound() {
                 return PrigadierArguments.SOUND;
+        }
+
+        static <E extends Entity> Type<List<E>> entities(Class<E> clazz) {
+                return PrigadierArguments.entities(clazz);
+        }
+
+        static <E extends Entity> Type<E> entity(Class<E> clazz) {
+                return PrigadierArguments.entity(clazz);
         }
 
         static <T extends Enum<T> & net.kyori.adventure.key.Keyed> Type<T> keyedEnum(Class<T> clazz) {

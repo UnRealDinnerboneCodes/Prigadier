@@ -5,20 +5,18 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.BuiltInExceptionProvider;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.unrealdinnerbone.prigadier.PrigadierUtils;
 import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.entity.Player;
 
-public class Exceptions {
-    public static final BuiltInExceptionProvider BUILT_IN_EXCEPTIONS = CommandSyntaxException.BUILT_IN_EXCEPTIONS;
-    public static final SimpleCommandExceptionType ERROR_NOT_PLAYER = CommandSourceStack.ERROR_NOT_PLAYER;
-    public static final SimpleCommandExceptionType ERROR_NOT_ENTITY = CommandSourceStack.ERROR_NOT_ENTITY;
+public interface Exceptions {
+    BuiltInExceptionProvider BUILT_IN_EXCEPTIONS = CommandSyntaxException.BUILT_IN_EXCEPTIONS;
+    SimpleCommandExceptionType ERROR_NOT_PLAYER = CommandSourceStack.ERROR_NOT_PLAYER;
+    SimpleCommandExceptionType ERROR_NOT_ENTITY = CommandSourceStack.ERROR_NOT_ENTITY;
 
-
-    public static Player assertPlayer(CommandContext<BukkitBrigadierCommandSource> context) throws CommandSyntaxException {
-        if(context.getSource().getBukkitSender() == null || !(context.getSource().getBukkitSender() instanceof Player player)) {
-            throw ERROR_NOT_PLAYER.create();
-        }
-        return player;
+    static Player assertPlayer(CommandContext<BukkitBrigadierCommandSource> context) throws CommandSyntaxException {
+        return PrigadierUtils.assertPlayer(context);
     }
+
 }
     

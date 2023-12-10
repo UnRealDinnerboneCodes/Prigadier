@@ -27,4 +27,18 @@ public class Messages
     public static void sendSuccessMessage(BukkitBrigadierCommandSource source, Supplier<String> feedbackSupplier) throws IllegalArgumentException {
         sendSuccessMessage(source, feedbackSupplier, true);
     }
+
+    public static void sendFailure(BukkitBrigadierCommandSource source, net.kyori.adventure.text.Component feedback) throws IllegalArgumentException {
+        if(source instanceof CommandSourceStack stack) {
+            stack.sendFailure(PaperAdventure.asVanilla(feedback));
+        }else {
+            throw new IllegalArgumentException("Source must be a CommandSourceStack");
+        }
+    }
+
+    public static void sendFailureMessage(BukkitBrigadierCommandSource source, String feedback) throws IllegalArgumentException {
+        sendFailure(source, net.kyori.adventure.text.Component.text(feedback));
+    }
+
+
 }

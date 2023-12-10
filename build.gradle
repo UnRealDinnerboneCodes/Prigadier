@@ -10,7 +10,7 @@ apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/he
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 dependencies {
-    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.20.1-R0.1-SNAPSHOT")
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.20.4-R0.1-SNAPSHOT")
 }
 
 //https://github.com/packet-loss-gaming/Hackbook/blob/b21a8fc3630d41236099ddd7d64ab2e688ddd08f/build.gradle#L33
