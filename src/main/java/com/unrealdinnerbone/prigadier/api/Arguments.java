@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.prigadier.api;
 
 import com.destroystokyo.paper.ParticleBuilder;
+import com.unrealdinnerbone.crafty.api.ParticleOption;
 import com.unrealdinnerbone.prigadier.PrigadierArguments;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
@@ -154,7 +155,7 @@ public interface Arguments {
                 return PrigadierArguments.OFFLINE_PLAYERS;
         }
 
-        static Type<ParticleBuilder> particle() {
+        static Type<ParticleOption> particle() {
                 return PrigadierArguments.PARTICLE_BUILDER;
         }
 

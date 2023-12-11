@@ -10,6 +10,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.unrealdinnerbone.crafty.api.ParticleOption;
+import com.unrealdinnerbone.crafty.particle.CraftyParticle;
 import com.unrealdinnerbone.prigadier.api.Suggestions;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
@@ -88,10 +90,7 @@ public class PrigadierArguments {
     private static final Dynamic2CommandExceptionType NOT_ENTITY_TYPE = new Dynamic2CommandExceptionType((one, two) ->
             new LiteralMessage(one + " is not of entity type " + two));
 
-    public static final BasicType<ParticleBuilder> PARTICLE_BUILDER = of(() -> ParticleArgument.particle(CONTEXT), (context, s) -> {
-        ParticleOptions particle = ParticleArgument.getParticle(Conversions.cast(context), s);
-        return new ParticleBuilder(CraftParticle.minecraftToBukkit(particle.getType())).data(Conversions.convertOptionsToType(particle));
-    });
+    public static final BasicType<ParticleOption> PARTICLE_BUILDER = of(() -> ParticleArgument.particle(CONTEXT), (context, s) -> new CraftyParticle(ParticleArgument.getParticle(Conversions.cast(context), s)));
 
 
     public static <T extends Entity> BasicType<T> entity(Class<T> entities) {
