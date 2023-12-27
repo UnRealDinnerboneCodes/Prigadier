@@ -187,7 +187,7 @@ public class PrigadierArguments {
         }else {
             OfflinePlayer offlinePlayer = Conversions.convertOfflinePlayer(gameProfiles.stream().findFirst().get());
             if(!offlinePlayer.getPlayerProfile().isComplete()) {
-                if(!offlinePlayer.getPlayerProfile().completeFromCache(false, true)) {
+                if(!offlinePlayer.getPlayerProfile().complete(false)) {
                     throw RATE_LIMITED.create();
                 }
             }
@@ -199,7 +199,7 @@ public class PrigadierArguments {
         List<OfflinePlayer> offlinePlayers = Conversions.convertOfflinePlayers(GameProfileArgument.getGameProfiles(Conversions.cast(context), s));
         for (OfflinePlayer offlinePlayer : offlinePlayers) {
             if(!offlinePlayer.getPlayerProfile().isComplete()) {
-                if(!offlinePlayer.getPlayerProfile().completeFromCache(false, true)) {
+                if(!offlinePlayer.getPlayerProfile().complete(false)) {
                     throw RATE_LIMITED.create();
                 }
             }
