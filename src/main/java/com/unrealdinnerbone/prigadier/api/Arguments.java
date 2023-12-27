@@ -139,6 +139,14 @@ public interface Arguments {
                 return PrigadierArguments.floatArg(min, max);
         }
 
+        static Type<OfflinePlayer> offlinePlayerCompleted() {
+                return PrigadierArguments.OFFLINE_PLAYER_COMPLETED;
+        }
+
+        static Type<List<OfflinePlayer>> offlinePlayersCompleted() {
+                return PrigadierArguments.OFFLINE_PLAYERS_COMPLETED;
+        }
+
         static Type<Component> component() {
                 return PrigadierArguments.COMPONENT;
         }
