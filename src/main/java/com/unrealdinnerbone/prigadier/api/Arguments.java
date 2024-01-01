@@ -15,6 +15,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
@@ -145,6 +146,10 @@ public interface Arguments {
 
         static Type<List<OfflinePlayer>> offlinePlayersCompleted() {
                 return PrigadierArguments.OFFLINE_PLAYERS_COMPLETED;
+        }
+
+        static Type<Criteria> criteria() {
+                return PrigadierArguments.CRITERIA;
         }
 
         static Type<Component> component() {

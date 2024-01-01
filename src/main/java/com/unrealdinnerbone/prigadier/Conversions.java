@@ -19,11 +19,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.gameevent.EntityPositionSource;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.craftbukkit.v1_20_R3.scoreboard.CraftCriteria;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
@@ -31,6 +34,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3f;
 
 import javax.print.attribute.standard.Destination;
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.List;
 
@@ -129,4 +133,14 @@ public class Conversions
         return Color.fromRGB((int) (vec3.x() * 255), (int) (vec3.y() * 255), (int) (vec3.z() * 255));
     }
 
+    public static Criteria convertCriteria(ObjectiveCriteria criteria) {
+        try {
+            Class<?> clazz = CraftCriteria.class;
+            Constructor<?> constructor = clazz.getConstructor(ObjectiveCriteria.class);
+            constructor.setAccessible(true);
+            return (Criteria) constructor.newInstance(criteria);
+        }catch (Exception e) {
+            return Criteria.DUMMY;
+        }
+    }
 }

@@ -33,6 +33,7 @@ import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.scores.ScoreHolder;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
@@ -42,6 +43,7 @@ import org.bukkit.craftbukkit.v1_20_R3.CraftSound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
@@ -73,6 +75,9 @@ public class PrigadierArguments {
 
     //Todo
     public static final BasicType<Collection<String>> SCORE_HOLDERS = of(ScoreHolderArgument::scoreHolders, (context, s) -> ScoreHolderArgument.getNamesWithDefaultWildcard(Conversions.cast(context), s).stream().map(ScoreHolder::getScoreboardName).toList());
+
+    public static final BasicType<Criteria> CRITERIA = of(ObjectiveCriteriaArgument::criteria, (context, s) -> Conversions.convertCriteria(ObjectiveCriteriaArgument.getCriteria(Conversions.cast(context), s)));
+
     public static final BasicType<DisplaySlot> SCOREBOARD_SLOT = of(ScoreboardSlotArgument::displaySlot, (context, s) -> Conversions.convertSlot(ScoreboardSlotArgument.getDisplaySlot(Conversions.cast(context), s)));
     public static final BasicType<NamespacedKey> NAMESPACE = of(ResourceLocationArgument::id, (context, s) -> Conversions.convertNamespacedKey(ResourceLocationArgument.getId(Conversions.cast(context), s)));
     public static final BasicType<Position> POSITION = of(BlockPosArgument::blockPos, Conversions::covnertPosition);
