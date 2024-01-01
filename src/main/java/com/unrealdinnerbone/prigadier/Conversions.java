@@ -134,13 +134,6 @@ public class Conversions
     }
 
     public static Criteria convertCriteria(ObjectiveCriteria criteria) {
-        try {
-            Class<?> clazz = CraftCriteria.class;
-            Constructor<?> constructor = clazz.getConstructor(ObjectiveCriteria.class);
-            constructor.setAccessible(true);
-            return (Criteria) constructor.newInstance(criteria);
-        }catch (Exception e) {
-            return Criteria.DUMMY;
-        }
+        return Criteria.create(criteria.getName());
     }
 }
