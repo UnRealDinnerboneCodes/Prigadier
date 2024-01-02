@@ -7,10 +7,7 @@ import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.NamespacedKey;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -191,6 +188,16 @@ public interface Arguments {
         static Type<BlockData> blockState() {
                 return PrigadierArguments.BLOCK_STATE;
         }
+
+        static Type<Statistic> statistic() {
+                return PrigadierArguments.STAT;
+        }
+
+        static <E extends Enum<E>> Type<E> enumArgument(Class<E> clazz) {
+                return PrigadierArguments.createEnum(clazz);
+        }
+
+
 
 
 }

@@ -13,6 +13,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.unrealdinnerbone.crafty.api.ParticleOption;
 import com.unrealdinnerbone.crafty.particle.CraftyParticle;
+import com.unrealdinnerbone.prigadier.api.Arguments;
 import com.unrealdinnerbone.prigadier.api.Suggestions;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
@@ -29,6 +30,7 @@ import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -37,6 +39,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
+import org.bukkit.Statistic;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.v1_20_R3.CraftParticle;
 import org.bukkit.craftbukkit.v1_20_R3.CraftSound;
@@ -90,8 +93,45 @@ public class PrigadierArguments {
     public static final BasicType<Float> FLOAT = of(FloatArgumentType::floatArg, FloatArgumentType::getFloat);
     public static final BasicType<Double> DOUBLE = of(DoubleArgumentType::doubleArg, DoubleArgumentType::getDouble);
     public static final BasicType<Long> LONG = of(LongArgumentType::longArg, LongArgumentType::getLong);
-//    public static final BasicType<Particle> PARTICLE = of(() -> ParticleArgument.particle(CONTEXT), (context, s) -> CraftParticle.convertLegacy(ParticleArgument.getParticle(Conversions.cast(context), s)));
     public static final BasicType<BlockData> BLOCK_STATE = of(() -> BlockStateArgument.block(CONTEXT), (context, s) -> Conversions.convertBlockInput(BlockStateArgument.getBlock(Conversions.cast(context), s)));
+
+    private static final DynamicCommandExceptionType NOT_EXIST = new DynamicCommandExceptionType((id) -> new LiteralMessage("Stats for " + id + " does not exist"));
+
+    public static Type<Statistic> STAT = new Type<>() {
+        @Override
+        public Statistic parse(CommandContext<BukkitBrigadierCommandSource> commandContext, String s) throws CommandSyntaxException {
+            NamespacedKey key = Arguments.namespace().parse(commandContext, s);
+            return Arrays.stream(Statistic.values())
+                    .filter(statistic -> statistic.key().equals(key))
+                    .findFirst()
+                    .orElseThrow(() -> NOT_EXIST.create(key.toString()));
+        }
+
+        @Override
+        public RequiredArgumentBuilder<BukkitBrigadierCommandSource, ?> create(String s) {
+            return Arguments.namespace().create(s)
+                    .suggests((context, builder) -> Suggestions.strings(builder, Arrays.stream(Statistic.values()).map(Statistic::getKey).map(NamespacedKey::toString).toList()));
+        }
+    };
+
+    private static final DynamicCommandExceptionType INVALID_ENUM = new DynamicCommandExceptionType((object) -> new LiteralMessage("Invalid Value: " + object.toString()));
+
+
+    public static <E extends Enum<E>> Type<E> createEnum(Class<E> eClass) {
+        E[] enumConstants = eClass.getEnumConstants();
+        return new Type<>() {
+            @Override
+            public E parse(CommandContext<BukkitBrigadierCommandSource> commandContext, String s) throws CommandSyntaxException {
+                String string = StringArgumentType.getString(commandContext, s);
+                return Arrays.stream(enumConstants).filter(e -> e.name().equalsIgnoreCase(string)).findFirst().orElseThrow(() -> INVALID_ENUM.create(string));
+            }
+
+            @Override
+            public RequiredArgumentBuilder<BukkitBrigadierCommandSource, ?> create(String s) {
+                return Arguments.word().create(s).suggests((context, builder) -> Suggestions.strings(builder, Arrays.stream(enumConstants).map(Enum::name).toList()));
+            }
+        };
+    }
 
     private static final Dynamic2CommandExceptionType NOT_ENTITY_TYPE = new Dynamic2CommandExceptionType((one, two) ->
             new LiteralMessage(one + " is not of entity type " + two));

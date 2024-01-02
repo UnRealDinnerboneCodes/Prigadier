@@ -1,8 +1,10 @@
 package com.unrealdinnerbone.prigadier;
 
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
+import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
@@ -13,16 +15,19 @@ import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.*;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.gameevent.EntityPositionSource;
-import net.minecraft.world.level.gameevent.PositionSource;
+import net.minecraft.stats.StatType;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.craftbukkit.v1_20_R3.scoreboard.CraftCriteria;
+import org.bukkit.craftbukkit.v1_20_R3.CraftStatistic;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -33,10 +38,9 @@ import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3f;
 
-import javax.print.attribute.standard.Destination;
-import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @ApiStatus.Internal
 public class Conversions
@@ -103,30 +107,6 @@ public class Conversions
 
     public static CommandContext<CommandSourceStack> cast(CommandContext<BukkitBrigadierCommandSource> stack) {
         return (CommandContext<CommandSourceStack>) (Object) stack;
-    }
-
-    public static Object convertOptionsToType(ParticleOptions particleOptions) {
-        if(particleOptions instanceof BlockParticleOption blockParticleOption) {
-            return blockParticleOption.getState().createCraftBlockData();
-        }else if(particleOptions instanceof DustColorTransitionOptions dustColorTransitionOptions) {
-            return new Particle.DustTransition(fromVec3(dustColorTransitionOptions.getFromColor()),
-                    fromVec3(dustColorTransitionOptions.getToColor()),
-                    dustColorTransitionOptions.getScale());
-        }else if(particleOptions instanceof DustParticleOptions dustParticleOptions) {
-            return new Particle.DustOptions(fromVec3(dustParticleOptions.getColor()), dustParticleOptions.getScale());
-        }else if(particleOptions instanceof ItemParticleOption itemParticleOption) {
-            return itemParticleOption.getItem().asBukkitMirror();
-        }else if(particleOptions instanceof SculkChargeParticleOptions sculkChargeParticleOptions) {
-            return sculkChargeParticleOptions.roll();
-        }else if(particleOptions instanceof ShriekParticleOption shriekParticleOption) {
-            return shriekParticleOption.getDelay();
-        }else if(particleOptions instanceof SimpleParticleType simpleParticleType) {
-            return null;
-        }else if(particleOptions instanceof VibrationParticleOption vibrationParticleOption) {
-            throw new UnsupportedOperationException("VibrationParticleOption is not supported");
-        }else {
-            throw new UnsupportedOperationException("Unknown ParticleOption: " + particleOptions.getClass().getName());
-        }
     }
 
     public static Color fromVec3(Vector3f vec3) {
