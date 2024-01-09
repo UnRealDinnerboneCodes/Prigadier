@@ -16,11 +16,8 @@ public class Prigadier {
         consumer.accept(getDispatcher());
     }
 
-
-
-
-
-
-
+    public static void register(ICommand command) {
+        command.register(getDispatcher());
+    }
 
 }
