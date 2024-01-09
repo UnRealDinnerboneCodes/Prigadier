@@ -91,7 +91,7 @@ public class Conversions
     }
 
     public static PlayerProfile convertGameProfile(GameProfile gameProfile) {
-        return CraftPlayerProfile.asBukkitMirror(gameProfile);
+        return new CraftyPlayerProfile(gameProfile);
     }
 
     public static List<PlayerProfile> convertGameProfiles(Collection<com.mojang.authlib.GameProfile> gameProfiles) {
