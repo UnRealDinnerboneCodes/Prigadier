@@ -1,14 +1,15 @@
 package com.unrealdinnerbone.prigadier.api;
 
-import com.destroystokyo.paper.ParticleBuilder;
-import com.destroystokyo.paper.profile.PlayerProfile;
 import com.unrealdinnerbone.crafty.api.ParticleOption;
 import com.unrealdinnerbone.prigadier.PrigadierArguments;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.*;
+import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
+import org.bukkit.Statistic;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -137,17 +138,6 @@ public interface Arguments {
         static Type<Float> floatArg(float min, float max) {
                 return PrigadierArguments.floatArg(min, max);
         }
-
-        @Deprecated(forRemoval = true)
-        static Type<OfflinePlayer> offlinePlayerCompleted() {
-                return PrigadierArguments.OFFLINE_PLAYER_COMPLETED;
-        }
-
-        @Deprecated(forRemoval = true)
-        static Type<List<OfflinePlayer>> offlinePlayersCompleted() {
-                return PrigadierArguments.OFFLINE_PLAYERS_COMPLETED;
-        }
-
 
         static Type<CompletedProfile> playerProfile() {
                 return PrigadierArguments.GAME_PROFILE;

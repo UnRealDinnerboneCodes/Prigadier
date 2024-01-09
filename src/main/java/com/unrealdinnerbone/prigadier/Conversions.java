@@ -23,6 +23,7 @@ import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.craftbukkit.v1_20_R3.CraftServer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -100,7 +101,12 @@ public class Conversions
     }
 
     public static OfflinePlayer convertOfflinePlayer(com.mojang.authlib.GameProfile gameProfile) {
-        return Bukkit.getOfflinePlayer(gameProfile.getId());
+        Server server = Bukkit.getServer();
+        if (server instanceof CraftServer craftServer) {
+            return craftServer.getOfflinePlayer(gameProfile);
+        }else {
+            return Bukkit.getOfflinePlayer(gameProfile.getId());
+        }
     }
 
     public static List<OfflinePlayer> convertOfflinePlayers(Collection<com.mojang.authlib.GameProfile> gameProfiles) {

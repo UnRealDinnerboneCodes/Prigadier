@@ -38,11 +38,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
-import org.bukkit.NamespacedKey;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
-import org.bukkit.Statistic;
+import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.craftbukkit.v1_20_R3.CraftOfflinePlayer;
 import org.bukkit.craftbukkit.v1_20_R3.CraftParticle;
 import org.bukkit.craftbukkit.v1_20_R3.CraftSound;
 import org.bukkit.entity.Entity;
@@ -236,35 +234,6 @@ public class PrigadierArguments {
     public static BasicType<Integer> time(int min) {
         return of(() -> TimeArgument.time(min), IntegerArgumentType::getInteger);
     }
-
-    private static final SimpleCommandExceptionType RATE_LIMITED = new SimpleCommandExceptionType(new LiteralMessage("Rate limited, try again later"));
-
-    public static final BasicType<OfflinePlayer> OFFLINE_PLAYER_COMPLETED = of(GameProfileArgument::gameProfile, (context, s) -> {
-        Collection<GameProfile> gameProfiles = GameProfileArgument.getGameProfiles(Conversions.cast(context), s);
-        if(gameProfiles.size() != 1) {
-            throw EntityArgument.ERROR_NOT_SINGLE_PLAYER.create();
-        }else {
-            OfflinePlayer offlinePlayer = Conversions.convertOfflinePlayer(gameProfiles.stream().findFirst().get());
-            if(!offlinePlayer.getPlayerProfile().isComplete()) {
-                if(!offlinePlayer.getPlayerProfile().complete(false)) {
-                    throw RATE_LIMITED.create();
-                }
-            }
-            return offlinePlayer;
-        }
-    });
-
-    public static final BasicType<List<OfflinePlayer>> OFFLINE_PLAYERS_COMPLETED = of(GameProfileArgument::gameProfile, (context, s) -> {
-        List<OfflinePlayer> offlinePlayers = Conversions.convertOfflinePlayers(GameProfileArgument.getGameProfiles(Conversions.cast(context), s));
-        for (OfflinePlayer offlinePlayer : offlinePlayers) {
-            if(!offlinePlayer.getPlayerProfile().isComplete()) {
-                if(!offlinePlayer.getPlayerProfile().complete(false)) {
-                    throw RATE_LIMITED.create();
-                }
-            }
-        }
-        return offlinePlayers;
-    });
 
     protected static final DynamicCommandExceptionType INVALID_KEY = new DynamicCommandExceptionType((object) -> new LiteralMessage("Unknown key: " + object.toString()));
     public static <T extends Enum<T> & net.kyori.adventure.key.Keyed> Type<T> enumArgument(Class<T> clazz) {
