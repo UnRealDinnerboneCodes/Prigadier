@@ -15,6 +15,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.unrealdinnerbone.crafty.api.ParticleOption;
 import com.unrealdinnerbone.crafty.particle.CraftyParticle;
 import com.unrealdinnerbone.prigadier.api.Arguments;
+import com.unrealdinnerbone.prigadier.api.CompletedProfile;
 import com.unrealdinnerbone.prigadier.api.Suggestions;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
@@ -215,7 +216,7 @@ public class PrigadierArguments {
         }
     });
 
-    public static final BasicType<List<PlayerProfile>> GAME_PROFILES = of(GameProfileArgument::gameProfile, (context, s) -> Conversions.convertGameProfiles(GameProfileArgument.getGameProfiles(Conversions.cast(context), s)));
+    public static final BasicType<List<CompletedProfile>> GAME_PROFILES = of(GameProfileArgument::gameProfile, (context, s) -> Conversions.convertGameProfiles(GameProfileArgument.getGameProfiles(Conversions.cast(context), s)));
 
 
 

@@ -6,6 +6,7 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.unrealdinnerbone.prigadier.api.CompletedProfile;
 import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
@@ -90,11 +91,11 @@ public class Conversions
         return PaperAdventure.asAdventure(component);
     }
 
-    public static PlayerProfile convertGameProfile(GameProfile gameProfile) {
+    public static CompletedProfile convertGameProfile(GameProfile gameProfile) {
         return new CraftyPlayerProfile(gameProfile);
     }
 
-    public static List<PlayerProfile> convertGameProfiles(Collection<com.mojang.authlib.GameProfile> gameProfiles) {
+    public static List<CompletedProfile> convertGameProfiles(Collection<com.mojang.authlib.GameProfile> gameProfiles) {
         return gameProfiles.stream().map(Conversions::convertGameProfile).toList();
     }
 
