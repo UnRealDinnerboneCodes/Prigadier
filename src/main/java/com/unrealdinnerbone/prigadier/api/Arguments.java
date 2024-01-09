@@ -149,11 +149,11 @@ public interface Arguments {
         }
 
 
-        static Type<PlayerProfile> playerProfile() {
+        static Type<CompletedProfile> playerProfile() {
                 return PrigadierArguments.GAME_PROFILE;
         }
 
-        static Type<List<PlayerProfile>> playerProfiles() {
+        static Type<List<CompletedProfile>> playerProfiles() {
                 return PrigadierArguments.GAME_PROFILES;
         }
 

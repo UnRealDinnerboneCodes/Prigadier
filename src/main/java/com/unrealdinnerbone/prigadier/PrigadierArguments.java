@@ -207,7 +207,7 @@ public class PrigadierArguments {
     public static final BasicType<List<OfflinePlayer>> OFFLINE_PLAYERS = of(GameProfileArgument::gameProfile, (context, s) -> Conversions.convertOfflinePlayers(GameProfileArgument.getGameProfiles(Conversions.cast(context), s)));
 
 
-    public static final BasicType<PlayerProfile> GAME_PROFILE = of(GameProfileArgument::gameProfile, (context, s) -> {
+    public static final BasicType<CompletedProfile> GAME_PROFILE = of(GameProfileArgument::gameProfile, (context, s) -> {
         Collection<GameProfile> gameProfiles = GameProfileArgument.getGameProfiles(Conversions.cast(context), s);
         if(gameProfiles.size() != 1) {
             throw EntityArgument.ERROR_NOT_SINGLE_PLAYER.create();
