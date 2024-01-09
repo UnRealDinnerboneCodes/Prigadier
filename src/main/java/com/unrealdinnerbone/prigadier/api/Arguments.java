@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.prigadier.api;
 
 import com.destroystokyo.paper.ParticleBuilder;
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.unrealdinnerbone.crafty.api.ParticleOption;
 import com.unrealdinnerbone.prigadier.PrigadierArguments;
 import com.unrealdinnerbone.prigadier.api.util.Type;
@@ -137,13 +138,25 @@ public interface Arguments {
                 return PrigadierArguments.floatArg(min, max);
         }
 
+        @Deprecated(forRemoval = true)
         static Type<OfflinePlayer> offlinePlayerCompleted() {
                 return PrigadierArguments.OFFLINE_PLAYER_COMPLETED;
         }
 
+        @Deprecated(forRemoval = true)
         static Type<List<OfflinePlayer>> offlinePlayersCompleted() {
                 return PrigadierArguments.OFFLINE_PLAYERS_COMPLETED;
         }
+
+
+        static Type<PlayerProfile> playerProfile() {
+                return PrigadierArguments.GAME_PROFILE;
+        }
+
+        static Type<List<PlayerProfile>> playerProfiles() {
+                return PrigadierArguments.GAME_PROFILES;
+        }
+
 
         static Type<Criteria> criteria() {
                 return PrigadierArguments.CRITERIA;

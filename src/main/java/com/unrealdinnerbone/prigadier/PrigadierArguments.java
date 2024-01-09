@@ -2,6 +2,7 @@ package com.unrealdinnerbone.prigadier;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.*;
@@ -203,6 +204,18 @@ public class PrigadierArguments {
     });
 
     public static final BasicType<List<OfflinePlayer>> OFFLINE_PLAYERS = of(GameProfileArgument::gameProfile, (context, s) -> Conversions.convertOfflinePlayers(GameProfileArgument.getGameProfiles(Conversions.cast(context), s)));
+
+
+    public static final BasicType<PlayerProfile> GAME_PROFILE = of(GameProfileArgument::gameProfile, (context, s) -> {
+        Collection<GameProfile> gameProfiles = GameProfileArgument.getGameProfiles(Conversions.cast(context), s);
+        if(gameProfiles.size() != 1) {
+            throw EntityArgument.ERROR_NOT_SINGLE_PLAYER.create();
+        }else {
+            return Conversions.convertGameProfile(gameProfiles.stream().findFirst().get());
+        }
+    });
+
+    public static final BasicType<List<PlayerProfile>> GAME_PROFILES = of(GameProfileArgument::gameProfile, (context, s) -> Conversions.convertGameProfiles(GameProfileArgument.getGameProfiles(Conversions.cast(context), s)));
 
 
 

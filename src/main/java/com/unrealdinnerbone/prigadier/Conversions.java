@@ -1,10 +1,11 @@
 package com.unrealdinnerbone.prigadier;
 
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
-import com.mojang.brigadier.LiteralMessage;
+import com.destroystokyo.paper.profile.CraftPlayerProfile;
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
@@ -15,19 +16,12 @@ import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.StatType;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.craftbukkit.v1_20_R3.CraftStatistic;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -40,7 +34,6 @@ import org.joml.Vector3f;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @ApiStatus.Internal
 public class Conversions
@@ -95,6 +88,14 @@ public class Conversions
 
     public static Component convertComponent(net.minecraft.network.chat.Component component) {
         return PaperAdventure.asAdventure(component);
+    }
+
+    public static PlayerProfile convertGameProfile(GameProfile gameProfile) {
+        return CraftPlayerProfile.asBukkitMirror(gameProfile);
+    }
+
+    public static List<PlayerProfile> convertGameProfiles(Collection<com.mojang.authlib.GameProfile> gameProfiles) {
+        return gameProfiles.stream().map(Conversions::convertGameProfile).toList();
     }
 
     public static OfflinePlayer convertOfflinePlayer(com.mojang.authlib.GameProfile gameProfile) {
