@@ -156,6 +156,10 @@ public interface Arguments {
                 return PrigadierArguments.COMPONENT;
         }
 
+        static Type<Component> miniMessage() {
+                return PrigadierArguments.MINI_MESSAGE;
+        }
+
         static Type<Team> team() {
                 return PrigadierArguments.TEAM;
         }

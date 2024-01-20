@@ -95,6 +95,7 @@ public class PrigadierArguments {
     public static final BasicType<Long> LONG = of(LongArgumentType::longArg, LongArgumentType::getLong);
     public static final BasicType<BlockData> BLOCK_STATE = of(() -> BlockStateArgument.block(CONTEXT), (context, s) -> Conversions.convertBlockInput(BlockStateArgument.getBlock(Conversions.cast(context), s)));
 
+    public static final BasicType<Component> MINI_MESSAGE = of(StringArgumentType::string, (context, s) -> Conversions.convertMiniMessage(StringArgumentType.getString(context, s)));
     private static final DynamicCommandExceptionType NOT_EXIST = new DynamicCommandExceptionType((id) -> new LiteralMessage("Stats for " + id + " does not exist"));
 
     public static Type<Statistic> STAT = new Type<>() {

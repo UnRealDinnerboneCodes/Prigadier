@@ -11,6 +11,7 @@ import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.blocks.BlockInput;
@@ -123,5 +124,9 @@ public class Conversions
 
     public static Criteria convertCriteria(ObjectiveCriteria criteria) {
         return Criteria.create(criteria.getName());
+    }
+
+    public static Component convertMiniMessage(String string) {
+        return MiniMessage.miniMessage().deserialize(string);
     }
 }
