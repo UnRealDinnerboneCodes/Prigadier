@@ -1,8 +1,6 @@
-package com.unrealdinnerbone.prigadier;
+package com.unrealdinnerbone.prigadier.impl.args;
 
-import com.destroystokyo.paper.ParticleBuilder;
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
-import com.destroystokyo.paper.profile.PlayerProfile;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.*;
@@ -11,12 +9,14 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.unrealdinnerbone.crafty.api.CompletedProfile;
 import com.unrealdinnerbone.crafty.api.ParticleOption;
-import com.unrealdinnerbone.crafty.particle.CraftyParticle;
+import com.unrealdinnerbone.crafty.nms.CraftyParticle;
+import com.unrealdinnerbone.prigadier.Conversions;
 import com.unrealdinnerbone.prigadier.api.Arguments;
-import com.unrealdinnerbone.prigadier.api.CompletedProfile;
-import com.unrealdinnerbone.prigadier.api.Suggestions;
+import com.unrealdinnerbone.prigadier.api.SuggestionHelper;
+import com.unrealdinnerbone.prigadier.api.util.BasicType;
+import com.unrealdinnerbone.prigadier.api.util.OneOrMany;
 import com.unrealdinnerbone.prigadier.api.util.Type;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.key.Key;
@@ -29,23 +29,38 @@ import net.minecraft.commands.arguments.*;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
-import net.minecraft.commands.synchronization.SuggestionProviders;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.registries.VanillaRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.animal.CatVariant;
 import net.minecraft.world.scores.ScoreHolder;
-import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.bukkit.*;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Biome;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.craftbukkit.v1_20_R3.CraftOfflinePlayer;
-import org.bukkit.craftbukkit.v1_20_R3.CraftParticle;
-import org.bukkit.craftbukkit.v1_20_R3.CraftSound;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.boss.KeyedBossBar;
+import org.bukkit.craftbukkit.v1_20_R3.*;
+import org.bukkit.craftbukkit.v1_20_R3.attribute.CraftAttribute;
+import org.bukkit.craftbukkit.v1_20_R3.block.CraftBiome;
+import org.bukkit.craftbukkit.v1_20_R3.enchantments.CraftEnchantment;
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftEntityType;
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftFrog;
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftVillager;
+import org.bukkit.craftbukkit.v1_20_R3.entity.memory.CraftMemoryKey;
+import org.bukkit.craftbukkit.v1_20_R3.generator.structure.CraftStructureType;
+import org.bukkit.craftbukkit.v1_20_R3.inventory.trim.CraftTrimMaterial;
+import org.bukkit.craftbukkit.v1_20_R3.inventory.trim.CraftTrimPattern;
+import org.bukkit.craftbukkit.v1_20_R3.potion.CraftPotionEffectType;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.*;
+import org.bukkit.entity.memory.MemoryKey;
+import org.bukkit.generator.structure.StructureType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.trim.TrimMaterial;
+import org.bukkit.loot.LootTables;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -53,12 +68,13 @@ import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
-import java.util.function.Supplier;
+
+import static com.unrealdinnerbone.prigadier.api.util.BasicType.of;
 
 @ApiStatus.Internal
 public class PrigadierArguments {
 
-    private static final CommandBuildContext CONTEXT = Commands.createValidationContext(VanillaRegistries.createLookup());
+    public static final CommandBuildContext CONTEXT = Commands.createValidationContext(VanillaRegistries.createLookup());
 
     public static final BasicType<Team> TEAM = of(TeamArgument::team, (context, s) -> Conversions.convertTeam(TeamArgument.getTeam(Conversions.cast(context), s)));
     public static final BasicType<Component> COMPONENT = of(ComponentArgument::textComponent, (context, s) -> Conversions.convertComponent(ComponentArgument.getComponent(Conversions.cast(context), s)));
@@ -96,24 +112,46 @@ public class PrigadierArguments {
     public static final BasicType<BlockData> BLOCK_STATE = of(() -> BlockStateArgument.block(CONTEXT), (context, s) -> Conversions.convertBlockInput(BlockStateArgument.getBlock(Conversions.cast(context), s)));
 
     public static final BasicType<Component> MINI_MESSAGE = of(StringArgumentType::string, (context, s) -> Conversions.convertMiniMessage(StringArgumentType.getString(context, s)));
-    private static final DynamicCommandExceptionType NOT_EXIST = new DynamicCommandExceptionType((id) -> new LiteralMessage("Stats for " + id + " does not exist"));
 
-    public static Type<Statistic> STAT = new Type<>() {
-        @Override
-        public Statistic parse(CommandContext<BukkitBrigadierCommandSource> commandContext, String s) throws CommandSyntaxException {
-            NamespacedKey key = Arguments.namespace().parse(commandContext, s);
-            return Arrays.stream(Statistic.values())
-                    .filter(statistic -> statistic.key().equals(key))
-                    .findFirst()
-                    .orElseThrow(() -> NOT_EXIST.create(key.toString()));
-        }
+    public static class Registries {
 
-        @Override
-        public RequiredArgumentBuilder<BukkitBrigadierCommandSource, ?> create(String s) {
-            return Arguments.namespace().create(s)
-                    .suggests((context, builder) -> Suggestions.strings(builder, Arrays.stream(Statistic.values()).map(Statistic::getKey).map(NamespacedKey::toString).toList()));
-        }
-    };
+        public static Type<Advancement> ADVANCEMENT = MinecraftRegistryType.of("advancement", Registry.ADVANCEMENT);
+        public static OneOrMany<Art> ART = MTBType.ofRegistry(BuiltInRegistries.PAINTING_VARIANT, Registry.ART, CraftArt::minecraftToBukkit);
+        public static OneOrMany<Attribute> ATTRIBUTE = MTBType.ofRegistry(BuiltInRegistries.ATTRIBUTE, Registry.ATTRIBUTE, CraftAttribute::minecraftToBukkit);
+        public static OneOrMany<PatternType> BANNER_PATTERN = MTBType.ofRegistry(BuiltInRegistries.BANNER_PATTERN, Registry.BANNER_PATTERN, Conversions::convertPatternType);
+        public static Type<Biome> BIOME = MinecraftRegistryType.of("biome", Registry.BIOME);
+        public static Type<KeyedBossBar> BOSS_BAR = MinecraftRegistryType.of("boss_bar", Registry.BOSS_BARS);
+        public static OneOrMany<Cat.Type> CAT_VARIANT = MTBType.ofRegistry(BuiltInRegistries.CAT_VARIANT, Registry.CAT_VARIANT, Conversions::convertCatVariant);
+        public static OneOrMany<Enchantment> ENCHANTMENT = MTBType.ofRegistry(BuiltInRegistries.ENCHANTMENT, Registry.ENCHANTMENT, CraftEnchantment::minecraftToBukkit);
+
+
+        public static OneOrMany<EntityType> ENTITY_TYPE = MTBType.ofRegistry(BuiltInRegistries.ENTITY_TYPE, Registry.ENTITY_TYPE, CraftEntityType::minecraftToBukkit);
+        public static OneOrMany<MusicInstrument> INSTRUMENT = MTBType.ofRegistry(BuiltInRegistries.INSTRUMENT, Registry.INSTRUMENT, CraftMusicInstrument::minecraftToBukkit);
+        public static OneOrMany<PotionEffectType> EFFECT = MTBType.ofRegistry(BuiltInRegistries.MOB_EFFECT, Registry.POTION_EFFECT_TYPE, CraftPotionEffectType::minecraftToBukkit);
+        public static OneOrMany<StructureType> STRUCTURE = MTBType.ofRegistry(BuiltInRegistries.STRUCTURE_TYPE, Registry.STRUCTURE_TYPE, CraftStructureType::minecraftToBukkit);
+        public static OneOrMany<Sound> SOUND = MTBType.ofRegistry(BuiltInRegistries.SOUND_EVENT, Registry.SOUNDS, CraftSound::minecraftToBukkit);
+        public static OneOrMany<Villager.Profession> VILLAGER_PROFESSION = MTBType.ofRegistry(BuiltInRegistries.VILLAGER_PROFESSION, Registry.VILLAGER_PROFESSION, CraftVillager.CraftProfession::minecraftToBukkit);
+        public static OneOrMany<Villager.Type> VILLAGER_TYPE = MTBType.ofRegistry(BuiltInRegistries.VILLAGER_TYPE, Registry.VILLAGER_TYPE, Conversions::convertVillagerType);
+        public static OneOrMany<MemoryKey> MEMORY_KEY = MTBType.ofRegistry(BuiltInRegistries.MEMORY_MODULE_TYPE, Registry.MEMORY_MODULE_TYPE, CraftMemoryKey::minecraftToBukkit);
+        public static OneOrMany<Fluid> FLUID = MTBType.ofRegistry(BuiltInRegistries.FLUID, Registry.FLUID, CraftFluid::minecraftToBukkit);
+        public static OneOrMany<Frog.Variant> FROG_VARIANT = MTBType.ofRegistry(BuiltInRegistries.FROG_VARIANT, Registry.FROG_VARIANT, Conversions::convertFrogVariant);
+        public static OneOrMany<GameEvent> GAME_EVENT = MTBType.ofRegistry(BuiltInRegistries.GAME_EVENT, Registry.GAME_EVENT, CraftGameEvent::minecraftToBukkit);
+
+
+
+
+        public static Type<LootTables> LOOT_TABLE = MinecraftRegistryType.of("loot_table", Registry.LOOT_TABLES);
+        public static Type<Material> MATERIAL = MinecraftRegistryType.of("material", Registry.MATERIAL);
+        public static Type<Particle> PARTICLE = MinecraftRegistryType.of("particle", Registry.PARTICLE_TYPE);
+        public static Type<PotionType> POTION = MinecraftRegistryType.of("potion", Registry.POTION);
+        public static Type<Statistic> STATISTIC = MinecraftRegistryType.of("statistic", Registry.STATISTIC);
+        public static Type<TrimMaterial> TRIM_MATERIAL = MinecraftRegistryType.of("trim_material", Registry.TRIM_MATERIAL);
+        public static Type<PotionEffectType> POTION_EFFECT_TYPE = MinecraftRegistryType.of("potion_effect_type", Registry.POTION_EFFECT_TYPE);
+
+
+    }
+
+
 
     private static final DynamicCommandExceptionType INVALID_ENUM = new DynamicCommandExceptionType((object) -> new LiteralMessage("Invalid Value: " + object.toString()));
 
@@ -129,7 +167,7 @@ public class PrigadierArguments {
 
             @Override
             public RequiredArgumentBuilder<BukkitBrigadierCommandSource, ?> create(String s) {
-                return Arguments.word().create(s).suggests((context, builder) -> Suggestions.strings(builder, Arrays.stream(enumConstants).map(Enum::name).toList()));
+                return Arguments.word().create(s).suggests((context, builder) -> SuggestionHelper.strings(builder, Arrays.stream(enumConstants).map(Enum::name).toList()));
             }
         };
     }
@@ -170,29 +208,6 @@ public class PrigadierArguments {
             return entitiesList;
         });
     }
-
-    public static final Type<Sound> SOUND = new Type<>() {
-
-        private static final DynamicCommandExceptionType ERROR_UNKNOWN_SOUND = new DynamicCommandExceptionType((object) -> new LiteralMessage("Unknown sound: " + object.toString()));
-
-        @Override
-        public Sound parse(CommandContext<BukkitBrigadierCommandSource> context, String name) throws CommandSyntaxException {
-            ResourceLocation sound = ResourceLocationArgument.getId(Conversions.cast(context), name);
-            SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.get(sound);
-            if (soundEvent == null) {
-                throw ERROR_UNKNOWN_SOUND.create(sound);
-            }
-            return CraftSound.minecraftToBukkit(soundEvent);
-        }
-
-        @Override
-        public RequiredArgumentBuilder<BukkitBrigadierCommandSource, ?> create(String name) {
-            return com.unrealdinnerbone.prigadier.api.Commands.argument(name, ResourceLocationArgument.id())
-                    .suggests(((context, builder) -> SuggestionProviders.AVAILABLE_SOUNDS.getSuggestions(Conversions.cast(context), builder)));
-        }
-    };
-
-
 
     public static final BasicType<OfflinePlayer> OFFLINE_PLAYER = of(GameProfileArgument::gameProfile, (context, s) -> {
         Collection<GameProfile> gameProfiles = GameProfileArgument.getGameProfiles(Conversions.cast(context), s);
@@ -264,7 +279,7 @@ public class PrigadierArguments {
                                     .map(Optional::get)
                                     .map(Key::asString)
                                     .toList();
-                            return Suggestions.strings(builder, list);
+                            return SuggestionHelper.strings(builder, list);
                         });
             }
         };
@@ -278,7 +293,5 @@ public class PrigadierArguments {
         }
     }
 
-    private static <T> BasicType<T> of(Supplier<ArgumentType<?>> supplier, MapperFunction<CommandSyntaxException, T, CommandContext<BukkitBrigadierCommandSource>, String> function) {
-        return new BasicType<>(supplier, function);
-    }
+
 }

@@ -1,12 +1,11 @@
 package com.unrealdinnerbone.prigadier;
 
 import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
-import com.destroystokyo.paper.profile.CraftPlayerProfile;
-import com.destroystokyo.paper.profile.PlayerProfile;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.unrealdinnerbone.prigadier.api.CompletedProfile;
+import com.unrealdinnerbone.crafty.api.CompletedProfile;
+import com.unrealdinnerbone.crafty.nms.CraftyPlayerProfile;
 import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
@@ -18,15 +17,20 @@ import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.animal.CatVariant;
+import net.minecraft.world.entity.animal.FrogVariant;
+import net.minecraft.world.entity.npc.VillagerType;
+import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.bukkit.*;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.v1_20_R3.CraftServer;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -128,5 +132,21 @@ public class Conversions
 
     public static Component convertMiniMessage(String string) {
         return MiniMessage.miniMessage().deserialize(string);
+    }
+
+    public static PatternType convertPatternType(BannerPattern bannerPattern) {
+        return Registry.BANNER_PATTERN.get(Conversions.convertNamespacedKey(BuiltInRegistries.BANNER_PATTERN.getKey(bannerPattern)));
+    }
+
+    public static Cat.Type convertCatVariant(CatVariant catVariant) {
+        return Registry.CAT_VARIANT.get(Conversions.convertNamespacedKey(BuiltInRegistries.CAT_VARIANT.getKey(catVariant)));
+    }
+
+    public static Villager.Type convertVillagerType(VillagerType villagerType) {
+        return Registry.VILLAGER_TYPE.get(Conversions.convertNamespacedKey(BuiltInRegistries.VILLAGER_TYPE.getKey(villagerType)));
+    }
+
+    public static Frog.Variant convertFrogVariant(FrogVariant frogVariant) {
+        return Registry.FROG_VARIANT.get(Conversions.convertNamespacedKey(BuiltInRegistries.FROG_VARIANT.getKey(frogVariant)));
     }
 }

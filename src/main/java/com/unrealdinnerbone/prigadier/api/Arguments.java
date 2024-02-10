@@ -1,19 +1,29 @@
 package com.unrealdinnerbone.prigadier.api;
 
+import com.unrealdinnerbone.crafty.api.CompletedProfile;
 import com.unrealdinnerbone.crafty.api.ParticleOption;
-import com.unrealdinnerbone.prigadier.PrigadierArguments;
+import com.unrealdinnerbone.prigadier.api.util.OneOrMany;
 import com.unrealdinnerbone.prigadier.api.util.Type;
+import com.unrealdinnerbone.prigadier.impl.args.PrigadierArguments;
 import io.papermc.paper.math.Position;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.NamespacedKey;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
-import org.bukkit.Statistic;
+import org.bukkit.*;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Biome;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.boss.KeyedBossBar;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.*;
+import org.bukkit.entity.memory.MemoryKey;
+import org.bukkit.generator.structure.StructureType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.trim.TrimMaterial;
+import org.bukkit.loot.LootTables;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -67,6 +77,7 @@ public interface Arguments {
         static Type<Integer> slot() {
                 return PrigadierArguments.SLOT;
         }
+
 
         static Type<String> scoreHolder() {
                 return PrigadierArguments.SCORE_HOLDER;
@@ -176,10 +187,6 @@ public interface Arguments {
                 return PrigadierArguments.PARTICLE_BUILDER;
         }
 
-        static Type<Sound> sound() {
-                return PrigadierArguments.SOUND;
-        }
-
         static <E extends Entity> Type<List<E>> entities(Class<E> clazz) {
                 return PrigadierArguments.entities(clazz);
         }
@@ -188,21 +195,120 @@ public interface Arguments {
                 return PrigadierArguments.entity(clazz);
         }
 
-        static <T extends Enum<T> & net.kyori.adventure.key.Keyed> Type<T> keyedEnum(Class<T> clazz) {
-                return PrigadierArguments.enumArgument(clazz);
-        }
-
         static Type<BlockData> blockState() {
                 return PrigadierArguments.BLOCK_STATE;
-        }
-
-        static Type<Statistic> statistic() {
-                return PrigadierArguments.STAT;
         }
 
         static <E extends Enum<E>> Type<E> enumArgument(Class<E> clazz) {
                 return PrigadierArguments.createEnum(clazz);
         }
+
+        static Type<Advancement> advancement() {
+                return PrigadierArguments.Registries.ADVANCEMENT;
+        }
+
+        static OneOrMany<Art> art() {
+                return PrigadierArguments.Registries.ART;
+        }
+
+        static OneOrMany<Attribute> attribute() {
+                return PrigadierArguments.Registries.ATTRIBUTE;
+        }
+
+        static OneOrMany<PatternType> bannerPattern() {
+                return PrigadierArguments.Registries.BANNER_PATTERN;
+        }
+
+        static Type<Biome> biome() {
+                return PrigadierArguments.Registries.BIOME;
+        }
+
+        static Type<KeyedBossBar> bossBar() {
+                return PrigadierArguments.Registries.BOSS_BAR;
+        }
+
+        static OneOrMany<Cat.Type> catType() {
+                return PrigadierArguments.Registries.CAT_VARIANT;
+        }
+
+        static OneOrMany<Enchantment> enchantment() {
+                return PrigadierArguments.Registries.ENCHANTMENT;
+        }
+
+        static OneOrMany<EntityType> entityType() {
+                return PrigadierArguments.Registries.ENTITY_TYPE;
+        }
+
+        static OneOrMany<MusicInstrument> instrument() {
+                return PrigadierArguments.Registries.INSTRUMENT;
+        }
+
+        static Type<LootTables> lootTable() {
+                return PrigadierArguments.Registries.LOOT_TABLE;
+        }
+
+        static Type<Material> material() {
+                return PrigadierArguments.Registries.MATERIAL;
+        }
+
+        static Type<PotionEffectType> effect() {
+                return PrigadierArguments.Registries.POTION_EFFECT_TYPE;
+        }
+
+        static Type<Particle> particleType() {
+                return PrigadierArguments.Registries.PARTICLE;
+        }
+
+        static Type<PotionType> potion() {
+                return PrigadierArguments.Registries.POTION;
+        }
+
+        static Type<Statistic> statisticType() {
+                return PrigadierArguments.Registries.STATISTIC;
+        }
+
+        static OneOrMany<StructureType> structure() {
+                return PrigadierArguments.Registries.STRUCTURE;
+        }
+
+        static OneOrMany<Sound> sound() {
+                return PrigadierArguments.Registries.SOUND;
+        }
+
+        static Type<TrimMaterial> trimMaterial() {
+                return PrigadierArguments.Registries.TRIM_MATERIAL;
+        }
+
+        static OneOrMany<Villager.Profession> villagerProfession() {
+                return PrigadierArguments.Registries.VILLAGER_PROFESSION;
+        }
+
+        static OneOrMany<Villager.Type> villagerType() {
+                return PrigadierArguments.Registries.VILLAGER_TYPE;
+        }
+
+        static OneOrMany<MemoryKey> memoryKey() {
+                return PrigadierArguments.Registries.MEMORY_KEY;
+        }
+
+        static OneOrMany<Fluid> fluid() {
+                return PrigadierArguments.Registries.FLUID;
+        }
+
+        static OneOrMany<Frog.Variant> frogVariant() {
+                return PrigadierArguments.Registries.FROG_VARIANT;
+        }
+
+        static OneOrMany<GameEvent> gameEvent() {
+                return PrigadierArguments.Registries.GAME_EVENT;
+        }
+
+        static Type<PotionEffectType> potionEffectType() {
+                return PrigadierArguments.Registries.POTION_EFFECT_TYPE;
+        }
+
+
+
 
 
 
